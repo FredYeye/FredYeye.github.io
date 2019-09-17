@@ -1,87 +1,20 @@
 <!DOCTYPE html><html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="style.css">
-<title>Fred's Blag - How random is... Zeppelin Wolf (ActRaiser 1)</title>
+<title>Fred's VG Tech articles</title>
 </head><body>
 <div class="grid-container">
     <div class="item1">
-        <h1>Fred's Blag? Articles?</h1>
+        <h1>Fred's game tech articles (title pending)</h1>
         <h2>Musings about reverse engineering, retro game archeology and speedrun research</h2>
     </div>
 
     <div class="item2">
-        <p>Menu or something maybe</p>
+        <p><a href="index.html">Home</a></p>
     </div>
 
     <div class="item3">
-        <h1 class="post_title">How random is... Zeppelin Wolf? (ActRaiser 1)</h1>
-        <p>Recently I've been enjoying <a href="">MetroidMcfly's</a> professional mode speedruns of <i>ActRaiser</i>. Professional mode takes out the sim parts and leaves the action stages, making an otherwise hourlong run take just over twenty minutes to complete. Areas which used to be simple inconveniences can turn into real problems as they now make up a bigger part of the run! We'll be examining such an area here.</p>
-        <img src="img/zeppelinwolf.png" alt="" class="center" style="width:585; height:448;">
-        <p>Five minutes into the run you encounter the teleporting wizard known as <i>Zeppelin Wolf</i>. The wizard will teleport around to the various platforms and perform his attacks and, upon dropping below half health, transform into a werewolf and mindlessly walk towards you. Given the right set of teleport patterns it is possible to finish off the boss before he transforms though, making the fight much faster!</p>
-        <p>Mcfly was lamenting the fact that so much time was at mercy to where the wizard was teleporting - to the game's <span class="explanation" title="Random Number Generator">RNG</span>. But is he truly random? Can we perhaps manipulate his position?</p>
-        <p>Below are the positions and x/y coordinates the boss can teleport to:</p>
-        <img src="img/positions2.png" alt="" class="center" style="width:585; height:448;">
-        <p>Ideally we want him to teleport to the low/middle platforms to be able to deal sufficient damage; left/right is is inconsequential. Let's take a look at the subroutine that determines where the boss will appear.</p>
-        <pre>Select_location()
-    array x_values_left  = { 80,  32,  64,  64} <span>// each column represents a left/right + height pair</span>
-    array x_values_right = {192, 224, 192, 192}
-    array y_values       = {224, 176, 128,  80}
-
-    index = Random_value() % 4         <span>//get a random value, range = 0-3</span>
-
-    if(player_x < 128)
-    {
-        boss_x = x_values_right[index] <span>//if player is on the left half of the screen</span>
-    }
-    else
-    {
-        boss_x = x_values_left[index]  <span>//player is on right half</span>
-    }
-
-    boss_y = y_values[index]
-return</pre>
-        <p>The screen / playfield is 256 pixels wide, so checking if the player's X position is above or below 128 determines which side of the screen the player is on. From there the boss will simply choose the opposite side of the player (picking an X value that matches the Y value).<br>For the Y value however, it is directly using the returned value from the random number generator function to pick a height. From the boss's perspective, this process is completely random. But is it truly random...?</p>
-        <h3>PseudoRandom Number Generators</h3>
-        <p>The boss gets a height value based on the <i>Random_value()</i> subroutine. What does it do?</p>
-        <pre>array rng_state[16] <span>//zero initialized on console reset</span>
-
-Random_value()
-    carry = 0
-    for(x = 14; x >= 0; x--)
-    {
-        adc_result = rng_state[x] + rng_state[x+1] + carry
-
-        rng_state[x] = adc_result & 0xFF <span>//clamp result to 8 bits</span>
-        carry = adc_result >> 8          <span>//set carry to the 9th bit of the result</span>
-    }
-
-    for(x = 15; x >= 0; x--)
-    {
-        if(++rng_state[x] != 0) break    <span>//avoid zero states</span>
-    }
-return rng_state[0]                      <span>//return first byte of rng state array</span>
-
-
-Output:
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | initial state
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 | state after 1st call. returned 0
-    01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 02 |
-    11 10 0F 0E 0D 0C 0B 0A 09 08 07 06 05 04 03 03 |
-    99 88 78 69 5B 4E 42 37 2D 24 1C 15 0F 0A 06 04 |
-    CC 32 AA 31 C8 6D 1E DC A5 78 54 38 23 14 0A 05 | state after 5th call. returned CC</pre>
-        <p class="note">Note: this function technically returns both rng_state[0] and rng_state[1] as one 16-bit value. I'm somewhat confident this is simply a shortcut by the developers however, and rng_state[1] isn't meant to be used.</p>
-        <p>The random number generator appears to based on the <i>Add-with-carry (AWC)</i> random number generator, which itself is a modification of the <a>Lagged Fibonacci Generator (LFG)</a>. That's cutting edge considering the game was released close to when the AWC was first proposed!<br>These are <i>pseudo random number generators;</i> they are deterministic by nature. True randomness in computing is a rather complicated topic and besides, PRNGs are perfectly fine when used correctly.</p>
-        <p>Speaking of using things correctly, the RNG state is initialized to all zeroes when starting the game! The RNG function does have zero state prevention by incrementing the array after going through the add-with-carry part... however, it's quite common for a game to either:<br><span class="indent">1) continually run the RNG function every or every few frames, or</span><br><span class="indent">2) rapidly call the RNG function early on in the game, essentially seeding the RNG to get good randomness.</span></p>
-        <p>So that's the inital RNG state. I then made a <span class="explanation" title="Tool Assisted Speedrun">TAS</span> recording up til the boss, mimicking Mcfly's movement to see what called the RNG... turns out it is only used for one thing: to create the explosion effects when killing bosses!</p>
-        <p>Maybe they never ran into problems even without proper seeding - after all, it's barely used in the action stages.</p>
-        <img src="img/explosions.png" alt="" class="center" style="width:585; height:276;">
-        <p class="img_note">The only thing the RNG is used for before Zeppelin Wolf.</p>
-        <p>So while the RNG is called several times to place the explosions, it is always the same amount every time - this seems great! I think we can work with this!<br>But I soon realized I overlooked a crucial detail... <i>the two lowest bytes of the RNG state gets replaced with the global frame timer on screen transitions!</i> I even knew about this, but in the moment of excitement I completely forgot about it. The game starts incrementing a 16-bit timer every frame shortly after the system is powered on or reset. This is of course the reason the boss won't take the same action every time, even though RNG state is otherwise updated identically every run.</p>
-        <h3>Conclusion</h3>
-        <p>Well then. Zeppelin Wolf's action depends on when you enter his room! Even though it's just the tail end of the RNG state that changes, even though 14/16 array elements are going to be the same every time, it's enough to thwart any real attempts at manipulations.</p>
-        <p>There is one odd fact to point out about the global frame timer - while you can start a run on any given frame, entering doors appears to only happen every other frame. Since the "frame counter to RNG state" transfer only happens every other frame, the value sent to the RNG state is going to be always odd or always even depending on when you pressed start in the menu.</p>
-        <p>Going back to <i>Select_Location()</i> we can see that the x/y position array index is a "random" value modulo 4. Let's say you enter the boss door when the timer is 0x61F8. This will produce the random value 0xCA for the first teleport. Entering 2 frames later would yield 0xCC, another 2 frames 0xCE and so on. It's always going to be an even value until the high byte of the frame timer increments (every 256 frames = ~4.3s).<br>What that means is that the boss can only choose 2 actions out of the 4 available depending on when start was pressed in the menu: top(bad)/low(good) or middle(good)/ground(bad).<br>So... it's a 50/50 if you get a 50% success rate or... a 50% success rate for the first teleport. Well, that changes nothing!</p>
-        <p>So is Zeppelin Wolf random? I'd say yes, but it's teetering on the edge of not being though! Ultimately, I don't see a way of guaranteeing good patterns every time.</p>
+        <p><a href="article1.html">How random is... Zeppelin Wolf? (ActRaiser 1)</a> <span class="date">2019-09-17</span></p>
     </div>
 </div>
 </body></html>
