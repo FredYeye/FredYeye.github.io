@@ -38,7 +38,7 @@ u8 Get_prng_value()
 		<li>Aladdin (1993-11-21)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
 		</ul>
 		<h3 class="prng">Capcom's broken PRNG!</h3>
-		<p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here!<p>
+		<p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here! The algorithm itself is fine - it's actually an improvement over their previous LCG. They just used the wrong half of the rng state!<p>
 		<pre style="min-height:256px;"><img src="img/prng/gt.png" alt="" class="prng">u16 prng_state = 0x01C3
 
 u8 Get_prng_value()
@@ -55,7 +55,7 @@ u8 Get_prng_value()
 		<li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
 		</ul>
 		<h3 class="prng">Capcom's fixed PRNG</h3>
-		<p>Luckily Capcom realized something wasn't quite right. They were using the wrong part of the rng state as the return value! The initial state was also changed. The generated image has much less apparent symmetry compared to the earlier LCG!</p>
+		<p>Luckily Capcom realized something wasn't quite right and fixed the return value issue. The initial state was also updated. The generated image has much less apparent symmetry compared to the earlier LCG.</p>
 		<pre style="min-height:256px;"><img src="img/prng/dc.png" alt="" class="prng">u16 prng_state = 0x0D37
 
 u8 Get_prng_value()
@@ -69,8 +69,43 @@ u8 Get_prng_value()
 <span>Iterations before pixel brightness overflow: 5550585</span></pre>
 		<p>Games known to use this prng:</p>
 		<ul>
+		<li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
 		<li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
 		<li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+		</ul>
+		<h3>Quintet's state-of-the-art PRNG</h3>
+		<p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
+		<pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
+
+u8 Get_prng_value()
+{
+	bool carry = 0
+
+	for(int x = 15; x > 0; --x)
+	{
+		u16 result = rng_state[x - 1] + rng_state[x] + carry
+		rng_state[x - 1] = result
+		carry = result >> 8
+	}
+
+	for(int x = 16; x > 0; --x) <span>//zero state prevention</span>
+	{
+		if(++rng_state[x - 1])
+		{
+			break
+		}
+	}
+
+	return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
+}
+
+<span>Iterations before pixel brightness overflow: 12607491</span></pre>
+		<p>Games known to use this prng:</p>
+		<ul>
+		<li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Sets the 2 first bytes of the state to the game's frame counter on room transitions.</p></li>
+		<li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+		<li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
+		<li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br>Screen transitions writes the frame counter to state[2-3].</p></li>
 		</ul>
     </div>
 </div>

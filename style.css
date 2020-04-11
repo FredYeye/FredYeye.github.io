@@ -7,35 +7,29 @@ body
 h1
 {
     color:rgb(200,200,200);
-    text-shadow:2px 2px 4px rgb(10,10,10);
+    text-shadow:2px 2px 3px rgb(5,5,5);
 }
 
-h1.post_title
-{
-    padding-bottom:20px;
-}
+h1.post_title { padding-bottom:20px; }
 
 h2
 {
     font-weight: normal;
     font-size:20px;
     color:rgb(200,200,200);
-    text-shadow:2px 2px 4px rgb(10,10,10);
+    text-shadow:2px 2px 3px rgb(5,5,5);
 }
 
 h3
 {
     font-weight: normal;
-    font-size:20px;
+    font-size:24px;
     color:rgb(200,200,200);
-    padding-top:30px;
-    text-shadow:2px 2px 4px rgb(10,10,10);
+    padding-top:28px;
+    text-shadow:2px 2px 3px rgb(5,5,5);
 }
 
-h3.prng
-{
-	padding-top:60px;
-}
+h3.prng { padding-top:60px; }
 
 p
 {
@@ -52,6 +46,8 @@ ul
     line-height:1.4;
     padding-left:65px;
 }
+
+li > p { margin-top:6px; margin-bottom:28px; }
 
 p.date
 {
@@ -87,13 +83,10 @@ pre
     border-radius:5px;
     color:rgb(200,200,200);
     background-color:rgb(38,38,38);
-    box-shadow:2px 2px 5px rgb(10,10,10);
+    box-shadow:2px 2px 5px rgb(5,5,5);
 }
 
-pre > span
-{
-    color:rgb(160,160,160);
-}
+pre > span { color:rgb(160,160,160); }
 
 span.explanation
 {
@@ -101,10 +94,7 @@ span.explanation
     text-decoration-style:dotted;
 }
 
-span.indent
-{
-    padding-left:25px;
-}
+span.indent { padding-left:25px; }
 
 span.pseudo
 {
@@ -126,10 +116,7 @@ a
     text-decoration:none;
 }
 
-a:hover
-{
-    color:rgb(100,200,200);
-}
+a:hover { color:rgb(100,200,200); }
 
 img.center { margin:60px auto; display:block; }
 
@@ -153,5 +140,5 @@ img.prng { width:256; height:256; float:right; }
 {
     background-color:rgb(30,30,30);
     border-radius:5px;
-    box-shadow:2px 2px 5px rgb(10,10,10);
+    box-shadow:2px 2px 5px rgb(5,5,5);
 }
