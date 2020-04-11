@@ -16,7 +16,50 @@
     <div class="item3">
         <h1 class="post_title">How random is... Death Condor? (ActRaiser 2)</h1>
         <p class="date">2019-xx-xx</p>
-        <p></p>
+        <p>ActRaiser 2 is, as you might've guessed, the sequel to ActRaiser. Made on the request of Enix of America, the game thusly features no sim parts and only consists of action stages. It is an extremely difficult game and the controls feel rather clunky until you really get acquainted with them.</p>
+        <p>Few people have played this game and even fewer have tried their hand at speedrunning it, but one person has went above and beyond for this game - PJDicesare. PJ is running the game at an extremely high level; both precise execution and getting favorable random outcomes are hugely important.</p>
+        <img src="img/article2/deathcondor.png" alt="" class="center" style="width:585; height:448;">
+        <p>An early case of significant randomness appears in the shape of the <i>Death Condor</i> in Modero, the third stage of the speedrun. The miniboss hovers in the air and will either shoot fireballs or dive towards the player. The desired outcome is a dive; if it doesn't dive, we just have to wait out the fireballs until it dives.</p>
+        <pre>Select_action()
+    Update_RNG()
+
+    if(rng_state[0] & 1)
+    {
+        Dive()
+    }
+    else
+    {
+        Shoot()
+    }
+return</pre>
+        <pre>array rng_state[16] <span>//zero initialized on console reset</span>
+
+Update_RNG()
+    carry = 0
+    for(x = 14; x >= 0; x--)
+    {
+        adc_result = rng_state[x] + rng_state[x+1] + carry
+
+        rng_state[x] = adc_result & 0xFF <span>//clamp result to 8 bits</span>
+        carry = adc_result >> 8          <span>//set carry to the 9th bit of the result</span>
+    }
+
+    for(x = 15; x >= 0; x--)
+    {
+        if(++rng_state[x] != 0) break    <span>//avoid zero states</span>
+    }
+return
+
+
+<span>rng_state array contents:
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | initial state
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 | state after 1st call
+    01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 02 |
+    11 10 0F 0E 0D 0C 0B 0A 09 08 07 06 05 04 03 03 |
+    99 88 78 69 5B 4E 42 37 2D 24 1C 15 0F 0A 06 04 |
+    CC 32 AA 31 C8 6D 1E DC A5 78 54 38 23 14 0A 05 | state after 5th call</span>
+
+<span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
     </div>
 </div>
 </body></html>

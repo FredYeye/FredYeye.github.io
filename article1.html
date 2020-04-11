@@ -17,11 +17,11 @@
         <h1 class="post_title">How random is... Zeppelin Wolf? (ActRaiser 1)</h1>
         <p class="date">2019-09-17</p>
         <p>Recently I've been enjoying <a href="">MetroidMcfly's</a> professional mode speedruns of <i>ActRaiser</i>. Professional mode takes out the sim parts and leaves the action stages, making an otherwise hourlong run take just over twenty minutes to complete. Areas which used to be simple inconveniences can turn into real problems as they now make up a bigger part of the run! We'll be examining such an area here.</p>
-        <img src="img/zeppelinwolf.png" alt="" class="center" style="width:585; height:448;">
+        <img src="img/article1/zeppelinwolf.png" alt="" class="center" style="width:585; height:448;">
         <p>Five minutes into the run you encounter the teleporting wizard known as <i>Zeppelin Wolf</i>. The wizard will teleport around to the various platforms and perform his attacks and, upon dropping below half health, transform into a werewolf and mindlessly walk towards you. Given the right set of teleport patterns it is possible to finish off the boss before he transforms though, making the fight much faster!</p>
         <p>Mcfly was lamenting the fact that so much time was at mercy to where the wizard was teleporting - to the game's <span class="explanation" title="Random Number Generator">RNG</span>. But is he truly random? Can we perhaps manipulate his position?</p>
         <p>Below are the positions and x/y coordinates the boss can teleport to:</p>
-        <img src="img/positions2.png" alt="" class="center" style="width:585; height:448;">
+        <img src="img/article1/positions2.png" alt="" class="center" style="width:585; height:448;">
         <p>Ideally we want him to teleport to the low/middle platforms to be able to deal sufficient damage; left/right is is inconsequential. Let's take a look at the subroutine that determines where the boss will appear.</p>
         <pre>Select_location()
     array x_values_left  = { 80,  32,  64,  64} <span>// each column represents a left/right + height pair</span>
@@ -65,7 +65,7 @@ Random_value()
 return rng_state[0]                      <span>//return first byte of rng state array</span>
 
 
-<span>Output:
+<span>rng_state array contents:
     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | initial state
     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 | state after 1st call. returned 0
     01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 02 |
@@ -79,7 +79,7 @@ return rng_state[0]                      <span>//return first byte of rng state 
         <p>Speaking of using things correctly, the RNG state is initialized to all zeroes when starting the game! The RNG function does have zero state prevention by incrementing the array after going through the add-with-carry part... however, it's quite common for a game to either:<br><span class="indent">1) continually run the RNG function every or every few frames, or</span><br><span class="indent">2) rapidly call the RNG function early on in the game, essentially seeding the RNG to achieve good randomness.</span></p>
         <p>So that's the inital RNG state. I then made a <span class="explanation" title="Tool Assisted Speedrun">TAS</span> recording up til the boss, mimicking Mcfly's movement to see what called the RNG... turns out it is only used for one thing: to create the explosion effects when killing bosses!</p>
         <p>Maybe they never ran into poor randomness even without proper seeding - after all, it's barely used in the action stages.</p>
-        <img src="img/explosions.png" alt="" class="center" style="width:585; height:276;">
+        <img src="img/article1/explosions.png" alt="" class="center" style="width:585; height:276;">
         <p class="img_note">The only thing the RNG is used for before Zeppelin Wolf.</p>
         <p>So while the RNG is called several times to place the explosions, it is always the same amount every time - this seems great! I think we can work with this!<br>But I soon realized I overlooked a crucial detail... <i>the two lowest bytes of the RNG state gets replaced with the global frame timer on screen transitions!</i><br>I even knew about this, but in the moment of excitement I completely forgot about it. The game starts incrementing a 16-bit timer every <span class="explanation" title="1 frame @ ~60fps = ~17ms">frame</span> shortly after the system is powered on or reset. This is of course the reason the boss won't take the same action every time, even though RNG state is otherwise updated identically every run.</p>
         <p>There is one odd fact to point out about the global frame timer - while you can start a run on any given frame, entering doors appears to only happen every other frame. Since the "frame counter to RNG state" transfer only happens every other frame, the value sent to the RNG state is going to be always odd or always even depending on when you pressed start in the menu.</p>

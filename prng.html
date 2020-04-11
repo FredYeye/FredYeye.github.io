@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - Pseudo-Random Number Generators</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles (title pending)</h1>
+        <h2>Musings about reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">Pseudo-Random Number Generators</h1>
+        <p class="date">Last edited on: 2020-04-11</p>
+        <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Here we'll look at some algorithms games employ to create randomness.</p>
+		<p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
+		<p>The below images are made by generating a pair of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate, until a pixel that is max white would get hit again.</p>
+		<h3 class="prng">Capcom's early PRNG on the SNES</h3>
+		<p>Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0.<br>Nothing fancy, but it gets the job done. Notice the uniform diagonal patterns in the generated image.</p>
+		<pre style="min-height:256px;"><img src="img/prng/sgng.png" alt="" class="prng">u16 prng_state = 0x01C3
+
+u8 Get_prng_value()
+{
+    rng_state *= 259
+    return rng_state >> 8
+}
+
+
+<span>Iterations before pixel brightness overflow: 2088960</span></pre>
+		<p>Games known to use this prng:</p>
+		<ul>
+		<li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
+		<li>The Magical Quest Starring Mickey Mouse (1992-11-20)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>No attempts at seeding the state.<br>Resets the state at every new stage.</p></li>
+		<li>Aladdin (1993-11-21)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
+		</ul>
+		<h3 class="prng">Capcom's broken PRNG!</h3>
+		<p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here!<p>
+		<pre style="min-height:256px;"><img src="img/prng/gt.png" alt="" class="prng">u16 prng_state = 0x01C3
+
+u8 Get_prng_value()
+{
+    x = (rng_state * 3) & 0xFF00
+    rng_state = x | u8((x >> 8) + rng_state)
+    return rng_state >> 8
+}
+
+
+<span>Iterations before pixel brightness overflow: 115894</span></pre>
+		<p>Games known to use this prng:</p>
+		<ul>
+		<li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+		</ul>
+		<h3 class="prng">Capcom's fixed PRNG</h3>
+		<p>Luckily Capcom realized something wasn't quite right. They were using the wrong part of the rng state as the return value! The initial state was also changed. The generated image has much less apparent symmetry compared to the earlier LCG!</p>
+		<pre style="min-height:256px;"><img src="img/prng/dc.png" alt="" class="prng">u16 prng_state = 0x0D37
+
+u8 Get_prng_value()
+{
+    x = (rng_state * 3) & 0xFF00
+    rng_state = x | u8((x >> 8) + rng_state)
+    return rng_state
+}
+
+
+<span>Iterations before pixel brightness overflow: 5550585</span></pre>
+		<p>Games known to use this prng:</p>
+		<ul>
+		<li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+		<li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+		</ul>
+    </div>
+</div>
+</body></html>

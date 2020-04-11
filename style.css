@@ -32,12 +32,25 @@ h3
     text-shadow:2px 2px 4px rgb(10,10,10);
 }
 
+h3.prng
+{
+	padding-top:60px;
+}
+
 p
 {
     font-size:16px;
     color:rgb(200,200,200);
     line-height:1.4;
     padding-left:30px;
+}
+
+ul
+{
+    font-size:16px;
+    color:rgb(200,200,200);
+    line-height:1.4;
+    padding-left:65px;
 }
 
 p.date
@@ -123,6 +136,8 @@ img.center { margin:60px auto; display:block; }
 .item1 { grid-column:1; grid-row:1; padding:30px 50px; }
 .item2 { grid-column:1; grid-row:2; padding:0px 50px; }
 .item3 { grid-column:1; grid-row:3; padding:30px 50px; padding-bottom:50px; }
+
+img.prng { width:256; height:256; float:right; }
 
 .grid-container
 {
