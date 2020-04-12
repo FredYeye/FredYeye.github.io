@@ -17,11 +17,11 @@
         <h1 class="post_title">Pseudo-Random Number Generators</h1>
         <p class="date">Last edited on: 2020-04-11</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Here we'll look at some algorithms games employ to create randomness.</p>
-		<p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
-		<p>The below images are made by generating a pair of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate, until a pixel that is max white would get hit again.</p>
-		<h3 class="prng">Capcom's early PRNG on the SNES</h3>
-		<p>Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0.<br>Nothing fancy, but it gets the job done. Notice the uniform diagonal patterns in the generated image.</p>
-		<pre style="min-height:256px;"><img src="img/prng/sgng.png" alt="" class="prng">u16 prng_state = 0x01C3
+        <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
+        <p>The below images are made by generating a pair of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate, until a pixel that is max white would get hit again.</p>
+        <h3 class="prng">Capcom's early PRNG on the SNES</h3>
+        <p>Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0.<br>Nothing fancy, but it gets the job done. Notice the uniform diagonal patterns in the generated image.</p>
+        <pre style="min-height:256px;"><img src="img/prng/sgng.png" alt="" class="prng">u16 prng_state = 0x01C3
 
 u8 Get_prng_value()
 {
@@ -31,15 +31,30 @@ u8 Get_prng_value()
 
 
 <span>Iterations before pixel brightness overflow: 2088960</span></pre>
-		<p>Games known to use this prng:</p>
-		<ul>
-		<li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
-		<li>The Magical Quest Starring Mickey Mouse (1992-11-20)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>No attempts at seeding the state.<br>Resets the state at every new stage.</p></li>
-		<li>Aladdin (1993-11-21)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
-		</ul>
-		<h3 class="prng">Capcom's broken PRNG!</h3>
-		<p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here! The algorithm itself is fine - it's actually an improvement over their previous LCG. They just used the wrong half of the rng state!<p>
-		<pre style="min-height:256px;"><img src="img/prng/gt.png" alt="" class="prng">u16 prng_state = 0x01C3
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
+        <li>The Magical Quest Starring Mickey Mouse (1992-11-20)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>No attempts at seeding the state.<br>Resets the state at every new stage.</p></li>
+        <li>Aladdin (1993-11-21)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
+        </ul>
+        <h3 class="prng">Another LCG from Capcom</h3>
+        <p>This time we have an LCG with m=2<sup>16</sup>, c=15329.</p>
+        <pre style="min-height:256px;"><img src="img/prng/ff2.png" alt="" class="prng">u16 prng_state = 0
+
+u8 Get_prng_value()
+{
+    rng_state = rng_state * 137 + 15329;
+    return rngState >> 8;
+}
+
+<span>Iterations before pixel brightness overflow: 8355840</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        </ul>
+        <h3 class="prng">Capcom's broken PRNG!</h3>
+        <p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here! The algorithm itself is fine - it's actually an improvement over their previous LCG. They just used the wrong half of the rng state!<p>
+        <pre style="min-height:256px;"><img src="img/prng/gt.png" alt="" class="prng">u16 prng_state = 0x01C3
 
 u8 Get_prng_value()
 {
@@ -50,13 +65,14 @@ u8 Get_prng_value()
 
 
 <span>Iterations before pixel brightness overflow: 115894</span></pre>
-		<p>Games known to use this prng:</p>
-		<ul>
-		<li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
-		</ul>
-		<h3 class="prng">Capcom's fixed PRNG</h3>
-		<p>Luckily Capcom realized something wasn't quite right and fixed the return value issue. The initial state was also updated. The generated image has much less apparent symmetry compared to the earlier LCG.</p>
-		<pre style="min-height:256px;"><img src="img/prng/dc.png" alt="" class="prng">u16 prng_state = 0x0D37
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        <li>The Great Circus Mystery Starring Mickey & Minnie (1994-10-??)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        </ul>
+        <h3 class="prng">Capcom's fixed PRNG</h3>
+        <p>Luckily Capcom realized something wasn't quite right and fixed the return value issue. The initial state was also updated. The generated image has much less apparent symmetry compared to the earlier LCG.</p>
+        <pre style="min-height:256px;"><img src="img/prng/dc.png" alt="" class="prng">u16 prng_state = 0x0D37
 
 u8 Get_prng_value()
 {
@@ -67,46 +83,47 @@ u8 Get_prng_value()
 
 
 <span>Iterations before pixel brightness overflow: 5550585</span></pre>
-		<p>Games known to use this prng:</p>
-		<ul>
-		<li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-		<li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-		<li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-		</ul>
-		<h3>Quintet's state-of-the-art PRNG</h3>
-		<p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
-		<pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Mega Man X2 (1994-12-16)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        </ul>
+        <h3 class="prng">Quintet's state-of-the-art PRNG</h3>
+        <p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
+        <pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
 
 u8 Get_prng_value()
 {
-	bool carry = 0
+    bool carry = 0
 
-	for(int x = 15; x > 0; --x)
-	{
-		u16 result = rng_state[x - 1] + rng_state[x] + carry
-		rng_state[x - 1] = result
-		carry = result >> 8
-	}
+    for(int x = 15; x > 0; --x)
+    {
+        u16 result = rng_state[x - 1] + rng_state[x] + carry
+        rng_state[x - 1] = result
+        carry = result >> 8
+    }
 
-	for(int x = 16; x > 0; --x) <span>//zero state prevention</span>
-	{
-		if(++rng_state[x - 1])
-		{
-			break
-		}
-	}
+    for(int x = 16; x > 0; --x) <span>//zero state prevention</span>
+    {
+        if(++rng_state[x - 1])
+        {
+            break
+        }
+    }
 
-	return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
+    return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
 }
 
 <span>Iterations before pixel brightness overflow: 12607491</span></pre>
-		<p>Games known to use this prng:</p>
-		<ul>
-		<li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Sets the 2 first bytes of the state to the game's frame counter on room transitions.</p></li>
-		<li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
-		<li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
-		<li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br>Screen transitions writes the frame counter to state[2-3].</p></li>
-		</ul>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Sets the 2 first bytes of the state to the game's frame counter on room transitions.</p></li>
+        <li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        <li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
+        <li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br>Screen transitions writes the frame counter to state[2-3].</p></li>
+        </ul>
     </div>
 </div>
 </body></html>
