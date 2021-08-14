@@ -179,7 +179,7 @@ u8 Get_prng_value()
         </ul>
         <hr>
         <h3 class="prng">Human Entertainment's LFSR</h3>
-        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough.</p>
+        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough. The period (the amount of updates until the initial state is reached again) is a measly 32767, which could be achieved with a quarter of the bits used and some better chosen taps.</p>
         <pre style="min-height:256px;"><img src="img/prng/sos.png" alt="" class="prng">array[u8, 8] rng_state = (1, 0, 0, 0, 0, 0, 0, 0)
 
 void Update_rng() <span>//called many times every other frame</span>
