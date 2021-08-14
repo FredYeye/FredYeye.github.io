@@ -182,7 +182,7 @@ u8 Get_prng_value()
         <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough.</p>
         <pre style="min-height:256px;"><img src="img/prng/sos.png" alt="" class="prng">array[u8, 8] rng_state = (1, 0, 0, 0, 0, 0, 0, 0)
 
-void Update_rng() <span>//called multiple times per frame</span>
+void Update_rng() <span>//called many times every other frame</span>
 {
     rng_state = rng_state >> 1 <span>//shift entire array left as if it was one continous value</span>
     rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
