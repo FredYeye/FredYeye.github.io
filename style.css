@@ -2,6 +2,7 @@ body
 {
     font-family:'Roboto',sans-serif;
     background-color:rgb(20,20,20);
+	overflow-y: scroll;
 }
 
 h1
