@@ -1,0 +1,81 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - The Mark Davis REFERENCE BOOK</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles (title pending)</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">Fish calculation</h1>
+        <p class="date">Last edited: 2021-12-23</p>
+        <p>As mentioned in the main page, fish size and length is based on the fishing rating. Here's the list of fish data per rating:</p>
+        <pre>
+16 or higher:
+    Length: 21.60" ± 1.08"
+    Weight index: 8
+    Weight variance: ± 0.42lbs
+
+15:
+    Length: 18.60" ± 0.68"
+    Weight index: 7
+    Weight variance: ± 0.30lbs
+
+14:
+    Length: 16.60" ± 0.48"
+    Weight index: 6
+    Weight variance: ± 0.24lbs
+
+13:
+    Length: 15.40" ± 0.48"
+    Weight index: 5
+    Weight variance: ± 0.24lbs
+
+12:
+    Length: 14.20" ± 0.48"
+    Weight index: 4
+    Weight variance: ± 0.24lbs
+
+11:
+    Length: 12.80" ± 0.48"
+    Weight index: 3
+    Weight variance: ± 0.24lbs
+
+10:
+    Length: 12.20" ± 0.48"
+    Weight index: 2
+    Weight variance: ± 0.24lbs
+
+ 9:
+    Length: 11.40" ± 0.48"
+    Weight index: 1
+    Weight variance: ± 0.24lbs
+
+ 8 or less:
+    Length: 9.00" ± 0.68"
+    Weight index: 0
+    Weight variance: ± 0.30lbs</pre>
+        <p><i>Weight index</i> is used to select a weight from the weight table. The current stage of the tournament also matters.</p>
+        <pre>
+Stage                   0      1      2      3      4      5      6      7      8
+------------------------------------------------------------------------------------
+spring / championship | 1.23 | 1.65 | 1.74 | 1.89 | 2.07 | 2.34 | 2.88 | 4.86 | 6.42
+summer                | 1.14 | 1.53 | 1.65 | 1.74 | 1.86 | 2.10 | 2.55 | 4.62 | 6.15
+fall                  | 1.50 | 1.74 | 1.86 | 2.04 | 2.28 | 2.55 | 3.12 | 5.01 | 6.72
+winter1               | 0.96 | 1.35 | 1.44 | 1.59 | 1.77 | 2.04 | 2.46 | 4.53 | 4.92
+winter2               | 0.84 | 1.26 | 1.35 | 1.50 | 1.59 | 1.86 | 2.34 | 4.29 | 5.34</pre>
+        <p>If your rating is less than 14, the game will simply check your rating and set the fish data accordingly. If your rating is 14 or higher, other factors come into play however:</p>
+        <p>If you've caught 3 fishes in one day, a rating of 14 or higher will only get you 8 or less rated fishes! The same happens after catching two fishes in the same fishing spot; the third fish will be a 8 or less rated fish. This one can be circumvented by exiting and reentering the same spot for one more >=14 fish, however.</p>
+        <p>If you pass those two checks, chances are that <i>that's a big one</i> on the hook! The game will give you a fish based on your rating now (14-16+).</p>
+        <p>The lake has one more trick up its sleeve though: it will actually only let you catch one lunker per day! Once you catch one 16+ rated fish, any following will be replaced by rating 15 fishes for the rest of the day... well, until you run into the previous two fish count checks, that is!</p>
+        <p>Note: two points are deducted while quick reeling (holding X)!</p>
+    </div>
+</div>
+</body></html>
