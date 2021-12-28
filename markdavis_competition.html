@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - The Mark Davis REFERENCE BOOK</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles (title pending)</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">The competition</h1>
+        <p class="date">Last edited: 2021-12-28</p>
+        <p>Upon starting a new tournament run, Mark Davis and nine other competitors (out of 16 possible) are chosen to challenge you.</p>
+        <p>When you weigh in, the game will generate their catch. The amount they catch per day depends on the stage of the tournament.</p>
+        <pre>Spring       | 16.50, 16.08, 15.06, 14.82, 14.64, 13.62, 12.00, 11.58, 11.01, 10.29
+Summer       | 15.00, 14.64, 14.19, 13.62, 12.84, 12.42, 11.40, 10.98, 10.44, 09.66
+Fall         | 18.00, 17.58, 16.56, 15.72, 14.04, 13.32, 12.30, 09.78, 10.14, 09.24
+Winter 1     | 12.96, 12.18, 10.56, 09.72, 08.04, 07.32, 06.30, 03.78, 03.24, 04.14
+Winter 2     | 12.00, 11.64, 10.68, 09.72, 08.64, 07.92, 06.90, 05.64, 05.22, 04.89
+Championship | 16.50, 16.08, 15.06, 14.82, 14.64, 13.62, 12.00, 11.58, 11.01, 10.29</pre>
+        <p>There are ten weights per stage as seen above, one for each competitor. The game also keeps a list of competitors #1 - #10. A competitor will be chosen at random and get the first fish from the list, the next in line will get the second fish and so on (wrapping around from competitor #10 to #1 if necessary).</p>
+        <p>Here's an example of what it could look like:</p>
+        <pre>Stage: Spring
+Chosen starting competitor: #5
+
+Competitor | Weight
+-----------|-------
+ 1         | 12.00
+ 2         | 11.58
+ 3         | 11.01
+ 4         | 10.29 last assignment, smallest catch of the day!
+ 5         | 16.50 first assignment, biggest catch of the day!
+ 6         | 16.08
+ 7         | 15.06
+ 8         | 14.82
+ 9         | 14.64
+10         | 13.62 wraps from here to #1</pre>
+        <p>After all the weights have been assigned, 0.01 - 0.32 lbs is randomly added to each weight. With that, we can calculate what kind of catches we can expect from the opposition.</p>
+        <pre>Stage                 |  max  |  avg  |  min  |
+----------------------|-------|-------|-------|
+Spring       (1 day)  | 16.82 | 13.73 | 10.30 |
+Summer       (2 days) | 30.64 | 25.37 | 19.34 |
+Fall         (2 days) | 36.64 | 27.67 | 18.50 |
+Winter 1     (3 days) | 39.84 | 23.97 | 12.45 |
+Winter 2     (3 days) | 36.96 | 25.47 | 14.70 |
+Championship (3 days) | 50.46 | 41.18 | 30.90 |</pre>
+    </div>
+</div>
+</body></html>
