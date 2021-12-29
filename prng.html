@@ -82,7 +82,7 @@ u8 Get_prng_value()
     return rng_state >> 8
 }
 
-<span>Period: 16384<br>Iterations before brightness overflow: 2088960</span></pre>
+<span>Period: 2<sup>14</sup><br>Iterations before brightness overflow: 2088960</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
@@ -100,7 +100,7 @@ u8 Get_prng_value()
     return rngState >> 8;
 }
 
-<span>Period: 65536<br>Iterations before brightness overflow: 8355840</span></pre>
+<span>Period: 2<sup>16</sup><br>Iterations before brightness overflow: 8355840</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
@@ -189,7 +189,7 @@ void Update_rng() <span>//called many times every other frame</span>
     rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
 }
 
-<span>Period: 32767<br>Iterations before brightness overflow: 8355585</span></pre>
+<span>Period: 2<sup>15</sup>-1<br>Iterations before brightness overflow: 8355585</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
