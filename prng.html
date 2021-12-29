@@ -148,7 +148,7 @@ u8 Get_prng_value()
         </ul>
         <hr>
         <h3 class="prng">Quintet's state-of-the-art PRNG</h3>
-        <p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
+        <p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm... or some variation on it, anyway. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
         <pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
 
 u8 Get_prng_value()
