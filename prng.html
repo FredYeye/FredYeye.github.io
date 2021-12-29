@@ -65,7 +65,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
     dst = result           <span>//store 8-bit result in the first operand</span>
 }
 
-<span>Iterations before pixel brightness overflow: 4457510</span></pre>
+<span>Period: Not sure how to measure<br>Iterations before brightness overflow: 4457510</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight - SNES (1990-12-21)<p style="font-style:italic;">Notes:<br>-</p></li>
@@ -82,8 +82,7 @@ u8 Get_prng_value()
     return rng_state >> 8
 }
 
-
-<span>Iterations before pixel brightness overflow: 2088960</span></pre>
+<span>Period: 16384<br>Iterations before brightness overflow: 2088960</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
@@ -101,7 +100,7 @@ u8 Get_prng_value()
     return rngState >> 8;
 }
 
-<span>Iterations before pixel brightness overflow: 8355840</span></pre>
+<span>Period: 65536<br>Iterations before brightness overflow: 8355840</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
@@ -118,8 +117,7 @@ u8 Get_prng_value()
     return rng_state >> 8
 }
 
-
-<span>Iterations before pixel brightness overflow: 115894</span></pre>
+<span>Period: 43534<br>Iterations before brightness overflow: 115894</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
@@ -137,8 +135,7 @@ u8 Get_prng_value()
     return rng_state
 }
 
-
-<span>Iterations before pixel brightness overflow: 5550585</span></pre>
+<span>Period: 43534<br>Iterations before brightness overflow: 5550585</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
@@ -148,7 +145,7 @@ u8 Get_prng_value()
         </ul>
         <hr>
         <h3 class="prng">Quintet's state-of-the-art PRNG</h3>
-        <p>Quintet employed a quite sophisticated PRNG for the time - the Add-with-carry algorithm... or some variation on it, anyway. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
+        <p>Quintet employed a quite sophisticated PRNG for the time, sharing some similarity with the Add-With-Carry algorithm. While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
         <pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
 
 u8 Get_prng_value()
@@ -173,7 +170,7 @@ u8 Get_prng_value()
     return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
 }
 
-<span>Iterations before pixel brightness overflow: 12607491</span></pre>
+<span>Period: A lot (takes too long to compute)<br>Iterations before brightness overflow: 12607491</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Room transitions write the frame counter to state[0-1].</p></li>
@@ -192,7 +189,7 @@ void Update_rng() <span>//called many times every other frame</span>
     rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
 }
 
-<span>Iterations before pixel brightness overflow: 8355585</span></pre>
+<span>Period: 32767<br>Iterations before brightness overflow: 8355585</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
@@ -213,7 +210,7 @@ void Update_rng()
     rng_state[1] ^= rng_state[0]
 }
 
-<span>Iterations before pixel brightness overflow: 801026</span></pre>
+<span>Period: 9281<br>Iterations before brightness overflow: 801026</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Mark Davis' The Fishing Master (1995-06-30)<p style="font-style:italic;">Notes:<br>Called every frame (except loading frames) and on demand.<br>The game appears to mainly (only?) use state[1] for rng: the most significant bit for coinflips, and the least significant bits for most other things.</p></li>
