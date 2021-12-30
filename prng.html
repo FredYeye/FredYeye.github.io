@@ -170,7 +170,7 @@ u8 Get_prng_value()
     return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
 }
 
-<span>Period: A lot (takes too long to compute)<br>Iterations before brightness overflow: 12607491</span></pre>
+<span>Period: Too high to compute, possibly 2<sup>128</sup><br>Iterations before brightness overflow: 12607491</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Room transitions write the frame counter to state[0-1].</p></li>
