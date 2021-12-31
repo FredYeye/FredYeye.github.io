@@ -19,7 +19,7 @@ img.prng { width:256; height:256; float:right; }
 
     <div class="item3">
         <h1 class="post_title">Pseudo-Random Number Generators</h1>
-        <p class="date">Last edited: 2021-12-30</p>
+        <p class="date">Last edited: 2021-12-31</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Here we'll look at some algorithms games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <p>The below images are made by generating a pair of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate, until a pixel that is max white would get hit again. The images aren't super scientific and don't necessarily match what actually happens in-game. Still, they give us some idea of what's going on.</p>
@@ -141,6 +141,7 @@ u8 Get_prng_value()
         <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
         <li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
         <li>Mega Man X2 (1994-12-16)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Mega Man 7 (1995-03-24)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
         <li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
         </ul>
         <hr>
@@ -180,19 +181,20 @@ u8 Get_prng_value()
         </ul>
         <hr>
         <h3 class="prng">Human Entertainment's LFSR</h3>
-        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough. The period (the amount of updates until the initial state is reached again) is a measly 32767, which could be achieved with a quarter of the bits used and some better chosen taps.</p>
+        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough. The period (the amount of updates until the initial state is reached again) is a measly 32767, which could be achieved with a quarter of the bits used and some better chosen taps. Case in point: Mega Man 5 uses the same exact method but with a 32-bit state instead of 64 - the period and output is identical!</p>
         <pre style="min-height:256px;"><img src="img/prng/sos.png" alt="" class="prng">array[u8, 8] rng_state = (1, 0, 0, 0, 0, 0, 0, 0)
 
 void Update_rng() <span>//called many times every other frame</span>
 {
-    rng_state = rng_state >> 1 <span>//shift entire array right as if it was one continous value</span>
+    rng_state = rng_state >> 1 <span>//shift entire array right as if it was one continuous value</span>
     rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
 }
 
 <span>Period: 2<sup>15</sup>-1<br>Iterations before brightness overflow: 8355585</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
+            <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">Notes:<br>4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state.<br>Typically combines several parts of the state on use (for example: state[0] + state[1] = result).<br>In some cases on use, it even updates the state with different methods (like adding one state byte to another, or even adding outside sources like the frame counter).</p></li>
+            <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
         </ul>
         <hr>
         <h3>Natsume's PRNG</h3>
