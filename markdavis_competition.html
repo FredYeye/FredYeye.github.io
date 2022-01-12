@@ -24,7 +24,7 @@ Fall         | 18.00, 17.58, 16.56, 15.72, 14.04, 13.32, 12.30, 09.78, 10.14, 09
 Winter 1     | 12.96, 12.18, 10.56, 09.72, 08.04, 07.32, 06.30, 03.78, 03.24, 04.14
 Winter 2     | 12.00, 11.64, 10.68, 09.72, 08.64, 07.92, 06.90, 05.64, 05.22, 04.89
 Championship | 16.50, 16.08, 15.06, 14.82, 14.64, 13.62, 12.00, 11.58, 11.01, 10.29</pre>
-        <p>There are ten weights per stage as seen above, one for each competitor. The game also keeps a list of competitors #1 - #10. A competitor will be chosen at random and get the first fish from the list, the next in line will get the second fish and so on (wrapping around from competitor #10 to #1 if necessary).</p>
+        <p>There are ten weights per stage as seen above, one for each competitor. The game also keeps a list of competitors #1 - #10. A competitor between #1-#8 will be chosen at random and get the first fish from the list, the next in line will get the second fish and so on (wrapping around from competitor #10 to #1 if necessary).</p>
         <p>Here's an example of what it could look like:</p>
         <pre>Stage: Spring
 Chosen starting competitor: #5
@@ -34,22 +34,22 @@ Competitor | Weight
  1         | 12.00
  2         | 11.58
  3         | 11.01
- 4         | 10.29 last assignment, smallest catch of the day! (most of the time)
- 5         | 16.50 first assignment, biggest catch of the day!
+ 4         | 10.29 last assignment, the smallest catch of the day! (most of the time)
+ 5         | 16.50 first assignment, the lunker of the day!
  6         | 16.08
  7         | 15.06
  8         | 14.82
- 9         | 14.64
-10         | 13.62 wraps from here to #1</pre>
-        <p>After all the weights have been assigned, 0.01 - 0.32 lbs is randomly added to each weight. With that, we can calculate what kind of catches we can expect from the opposition.</p>
+ 9         | 14.64                       \ these two poor guys cannot get the lunker!
+10         | 13.62 wraps from here to #1 /</pre>
+        <p>After all the weights have been assigned, 0.01 - 0.32 lbs is randomly added to each weight.<br>With that, we can calculate what kind of catches we can expect from the opposition!<br>The <i>avg</i> column is not a true average; it is the average of possible winning catches. Get a higher weight than this and you're likely to win!</p>
         <pre>Stage                 |  min  |  max  |  avg  |
 ----------------------|-------|-------|-------|
-Spring       (1 day)  | 10.30 | 16.82 | 13.73 |
-Summer       (2 days) | 19.34 | 30.64 | 25.37 |
-Fall         (2 days) | 18.50 | 36.64 | 27.67 |
-Winter 1     (3 days) | 12.45 | 39.84 | 23.97 |
-Winter 2     (3 days) | 14.70 | 36.96 | 25.47 |
-Championship (3 days) | 30.90 | 50.46 | 41.18 |</pre>
+Spring       (1 day)  | 10.30 | 16.82 | 16.66 |
+Summer       (2 days) | 19.34 | 30.64 | 29.03 |
+Fall         (2 days) | 18.50 | 36.64 | 34.19 |
+Winter 1     (3 days) | 12.45 | 39.84 | 33.31 |
+Winter 2     (3 days) | 14.70 | 36.96 | 32.27 |
+Championship (3 days) | 30.90 | 50.46 | 46.60 |</pre>
     </div>
 </div>
 </body></html>
