@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="style.css">
-<title>Fred's VG Tech articles - How random is... Death Condor (ActRaiser 2)</title>
+<title>Fred's VG Tech articles - Generating maps for Syvalion (Snes)</title>
 </head><body>
 <div class="grid-container">
     <div class="item1">
@@ -14,34 +14,57 @@
     </div>
 
     <div class="item3">
-        <h1 class="post_title">How random is... Death Condor? (ActRaiser 2)</h1>
-        <p class="date">2021-xx-xx</p>
-        <p>ActRaiser 2 is, as you might've guessed, the sequel to ActRaiser. Made on the request of Enix of America, the game thusly features no sim parts and only consists of action stages. It is an extremely difficult game and the controls feel rather clunky until you really get acquainted with them.</p>
-        <p>Few people have played this game and even fewer have tried their hand at speedrunning it, but one person has went above and beyond for this game - PJDicesare. PJ is running the game at an extremely high level; both precise execution and getting favorable random outcomes are hugely important.</p>
-        <img src="img/article2/deathcondor.png" alt="" class="center" style="width:585; height:448;">
-        <p>An early case of significant randomness appears in the shape of the <i>Death Condor</i> in Modero, the third stage of the speedrun. The miniboss hovers in the air and will either shoot fireballs or dive towards the player. The desired outcome is a dive; if it doesn't dive, we just have to wait out the fireballs until it dives.</p>
-        <p>PJ would frequently reset the game if the boss didn't dive, as it would cost too much time. At that time I was starting to learn how to inspect the inner workings of games and decided to see if I couldn't figure out just how random this boss truly is!</p>
-        <h3>Looking at the code</h3>
-        <p>The code to select action is rather straightforward, as can be seen below:</p>
-        <pre>Select_action()
-    Update_RNG()
+        <h1 class="post_title">Generating maps for Syvalion (Snes)</h1>
+        <p class="date">2022-02-24</p>
+        <p>Syvalion is a game about flying a golden dragon spaceship through various mazes... well, something like that, anyway!</p>
+        <img src="img/article2/syvalion.png" alt="" class="center" style="width:585; height:448;">
+        <p>The odd setting aside, it was recently discovered that it's possible to clip through walls and go out of bounds, which rekindled the interest in speedrunning the game.</p>
+        <p>With the ability of travelling through walls at certain angles and skipping over the ever-turning mazes, an interest in studying the map layouts grew. I was asked by <a href="https://www.twitch.tv/pirateghetto">PIRATEGHETTO</a> about the possibility of pulling out the maps from the game data, so let's take a look under the hood of Syvalion!</p>
+        <h3>Finding our bearings (but the compass is filled with pasta)</h3>
+        <p>How do we go about finding the map data? Whenever I look into a game I like to start out with finding some basic information first. This usually means searching the game's memory for things like player data (hp, position & speed...) and other general values (current stage, frame counter...). It's good for both possible later use and to get a feel for how the game might be operating.</p>
+        <p>Syvalion hit the arcades in 1988, and was later ported to the Snes (which is the port we're looking at here). As seems to be quite often the case, the assembly code turned out rather strange in the porting process and was quite difficult to read at a glance. Finding the player position on the map turned out to be more complicated than I had hoped! I was able to find the speed the player travels at, but even then it was unclear how it was used to move the player forward.</p>
+        <p>If I can't even find <i>where</i> the player is, how I could I ever find the map? My first idea was to bump into a wall and read the code that stops the player - it must be checking the map and seeing a wall tile. That would be my opening into finding the maps. My heart sank and I went to bed.</p>
+        <h3>A simpler solution</h3>
+        <p>Upon waking up, after letting my thoughts ferment overnight, I felt my first idea was overly complicated anyway. Why not try something simpler, like... just looking at <i>all</i> data the game is reading? How much can it actually be? Let's see... the game ROM is 1 megabyte of data. With Mesen-S's memory viewer, I can fit about 4 kilobytes of that on my screen at once... 1MB / 4kB = 256 pages of data.</p>
+        <img src="img/article2/memview.png" alt="" class="center" style="width:700; height:553;">
+        <p class="img_note">That's a lot. Is this really a good idea...?</p>
+        <p>While 256 pages of data might sound like a lot to sift through, right now we're only interested in finding data that is being read, not what the actual values mean. The memory viewer will highlight recently read data in blue, so I tried freezing the emulator while moving across the map to look for a pattern of blue that could be some kind of map data.</p>
+        <img src="img/article2/maybe.png" alt="" class="center" style="width:700; height:164;">
+        <p class="img_note">A bit hard to make out the blue shapes. The image is too small, Fred!</p>
+        <p>Well! Those patterns look suspiciously square shaped, kinda like a... a screen! Unfreezing the emulator and moving around verified that this was in fact tiles! There's no compression or anything fancy going on here, there's just screens of tiles laying around in the ROM! The screen-of-tiles do not appear to be stored sequentially, so the next step was to determine which screen the game will load tiles from.</p>
+        <h3>Looking for a map</h3>
+        <p>Eventually I found both a list of screens and how it gets loaded. A 16x16 grid is created: the very first cell is actually stored after the grid but don't worry about it. The grid contains indices to screen-of-tiles, and is initialized with values pointing to a screen of wall tiles. Then comes placing the actual map data, which consists of an index and a direction (and some other data).</p>
+        <pre style="min-height:610px;"><img src="img/article2/grid.png" alt="" style="float:right;">Stage 1 map data
 
-    if(rng_state[0] & 1) //if RNG value is odd
-    {
-        Dive()
-    }
-    else                 //if RNG value is even
-    {
-        Shoot()
-    }
-return
+------------------
+screen | direction
+------------------
+0x14   | right
+0x02   | right
+0x06   | right
+0x1A   | down
+0x1D   | right
+0x09   | right
+0x20   | up
+0x0A   | right
+0x22   | up
+0x0A   | right
+0x00   | right
+0x01   | right
+0x18   | right
+0x19   | end
 
-<span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
-        <p>The game simply updates the RNG and checks if the updated value is even or odd to pick an action. The RNG is functionally identical to the one used in ActRaiser 1 (an Add-with-carry algorithm) with some slight adjustments to the code, so I won't go over it here again. See my previous <a href="article1.html#PRNGs">article</a> if you wish to see the code.</p>
-        <p>There was one important change made from ActRaiser 1 however: <i>there's no outside influence on the RNG state!</i> Screen transitions would alter the RNG state in a way that was impossible to control but this was removed for the sequel; it can now only be updated by calling the Update_RNG function when needed. This gives us much better chances for manipulating the RNG.</p>
-        <p>Having figured out the RNG, it was time to see if we could now track it up until Death Condor!</p>
-        <h3>TODO</h3>
-        <p>Feeling enthusiastic, I hopped on PJ's stream and reported my findings so far. He says "Great! Can we track the RNG up until the Modero boss?"<br>I quickly fired up the emulator, ready to watch for any changes in the RNG state and...</p>
+The placement cursor starts at X1:Y0, then moves
+according to the direction of the placed tile.
+
+The cursor will wrap around upon crossing the
+grid boundaries.</pre>
+    <p>It might look a bit odd with part of the map all the way at the bottom of the grid, but this is just the internal representation of the data. Since it's possible to wrap around the boundaries of the grid, we could scroll the data around to make it easier to look at.</p>
+    <img src="img/article2/grid2.png" alt="" class="center" style="width:508; height:236;">
+    <p>And that's that! I wrote a program that generates a grid and loads map data onto it, then turns it into an image.</p>
+    <img src="img/article2/example.png" alt="" class="center" style="width:800; height:700;">
+    <p class="img_note">Using the internal representation format.</p>
+    <p>The results can be seen here: <a href="syvalion.html">Syvalion maps</a>!</p>
     </div>
 </div>
 </body></html>
