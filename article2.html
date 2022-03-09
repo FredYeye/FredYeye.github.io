@@ -30,7 +30,7 @@
         <p class="img_note">That's a lot. Is this really a good idea...?</p>
         <p>While 256 pages of data might sound like a lot to sift through, right now we're only interested in finding data that is being read, not what the actual values mean. The memory viewer will highlight recently read data in blue, so I tried freezing the emulator while moving across the map to look for a pattern of blue that could be some kind of map data.</p>
         <img src="img/article2/maybe.png" alt="" class="center" style="width:700; height:164;">
-        <p class="img_note">A bit hard to make out the blue shapes. The image is too small, Fred!</p>
+        <p class="img_note">Data being read.</p>
         <p>Well! Those patterns look suspiciously square shaped, kinda like a... a screen! Unfreezing the emulator and moving around verified that this was in fact tiles! There's no compression or anything fancy going on here, there's just screens of tiles laying around in the ROM! The screen-of-tiles do not appear to be stored sequentially, so the next step was to determine which screen the game will load tiles from.</p>
         <h3>Looking for a map</h3>
         <p>Eventually I found both a list of screens and how it gets loaded. A 16x16 grid is created: the very first cell is actually stored after the grid but don't worry about it. The grid contains indices to screen-of-tiles, and is initialized with values pointing to a screen of wall tiles. Then comes placing the actual map data, which consists of an index and a direction (and some other data).</p>
