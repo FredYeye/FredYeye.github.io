@@ -96,7 +96,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
     dst = result           <span>//store 8-bit result in the first operand</span>
 }
 
-<span>Period: Not sure how to measure<br>Iterations before brightness overflow: 4457510</span></pre>
+<span>Period: 91463029 (w/o any Get_prng_value() calls & carry always false on start of update function)<br>Iterations before brightness overflow: 4457510</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight - SNES (1990-12-21)<p style="font-style:italic;">Notes:<br>-</p></li>
