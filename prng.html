@@ -45,7 +45,7 @@ img.prng { width:256; height:256; float:right; }
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2022-05-08</p>
+        <p class="date">Last edited: 2022-06-16</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <p>These generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG will be self-contained most of the time, but it's not an uncommon practice to mix in non-deterministic data, such as player input, modifying the state on value requests, using leftover results from other functions etc...</p>
@@ -350,6 +350,52 @@ u8 Get_rng_value(u8 multiplicand)
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Syvalion - SNES (1992-07-24)<p style="font-style:italic;">Notes:<br>Updates the offset every frame in the menu.</p></li>
+        </ul>
+        </div>
+
+        <button type="button" class="collapsible">Williams / Beam Software: Smash TV PRNG</button>
+        <div class="content">
+        <p>Perhaps not the best PRNG, but it sure creates a funky image!</p>
+        <pre style="min-height:256px;"><img src="img/prng/smashtv.png" alt="" class="prng">
+array [u8, 2] state = [0, 0]
+
+void Update_rng()
+{
+    state[0] = rotate_left(state[0], 1)
+    u16 temp = state[0] + 0x4E + (state[0] & 1) <span>//add with carry</span>
+    state[0] = temp & 0xFF                      <span>//^</span>
+    carry = temp & 0x100                        <span>//^</span>
+    state[0] ^= 0x3A
+    state[1] = (state[0] ^ state[1]) + 0xC3 + carry
+
+    return state[1]
+}
+
+<span>Period: 12800<br>Iterations before brightness overflow: 1632000</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Super Smash TV (1992-02-??)<p style="font-style:italic;">Notes:<br>-</p></li>
+        </ul>
+        </div>
+
+        <button type="button" class="collapsible">Many devs: compiler built-in randomness</button>
+        <div class="content">
+        <p>As consoles and the tools around them advanced, the need to write everything from scratch decreased. Most games around the PS1 / N64 era were likely written in C for example, which typically gave you access to some form of the <i>C standard library:</i> pre-written general purpose code so you didn't have to write it yourself. And yes, there is a rand() function in there!</p>
+        <p>While rand() can be implemented in different ways as long as it fills some certain criterias, I think it's fair to say that most implementations, especially at that time were all the same: a LCG with a 2<sup>31</sup> period. The return value is the upper half of the state (minus the sign bit to stop careless devs from making mistakes, I'm sure), as the quality of the lower bits of a LCG are typically very poor.<br>By today's standards it would probably not seem so good, but compared to most earlier PRNGs we've seen it is pretty darn good! If you look closely you can still see a faint diagonal pattern in the image.</p>
+        <p>As this was (is?) the standard rand() function in most C libraries, this PRNG has probably been used many, many times in countless games.</p>
+        <pre style="min-height:256px;"><img src="img/prng/ansic.png" alt="" class="prng">
+u32 state = 0
+
+void Update_rng()
+{
+    state = state * 1103515245 + 12345;
+    return (state >> 16) & 0x7FFF
+}
+
+<span>Period: 2<sup>31</sup><br>Iterations before brightness overflow: 15854216</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Magical Tetris Challenge, PS1 (1999-03-18)<p style="font-style:italic;">Notes:<br>Called twice during the intro, which effectively sets the starting state to 6.</p></li>
         </ul>
         </div>
     </div>
