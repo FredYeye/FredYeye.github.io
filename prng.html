@@ -33,7 +33,7 @@ img.prng { width:256; height:256; float:right; }
 </head><body>
 <div class="grid-container">
     <div class="item1">
-        <h1>Fred's game tech articles (title pending)</h1>
+        <h1>Fred's game tech articles</h1>
         <h2>Reverse engineering, retro game archeology and speedrun research</h2>
     </div>
 
@@ -43,18 +43,26 @@ img.prng { width:256; height:256; float:right; }
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2022-06-16</p>
+        <p class="date">Last edited: 2022-06-18</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms games employ to create randomness.</p>
-        <p>These generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG state will be self-contained most of the time, but it's not an uncommon practice to mix in non-deterministic data such as player input, modifying the state on value requests, using leftover results from other functions etc...</p>
-        <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. There are many ways to test the quality of PRNGs with tools such as DieHarder and the Hamming-weight dependecy test. We're not going to go quite that deep though, we'll just be scratching the surface here. With that out of the way, let's get to it!</p>
-        <p>The below images are made by generating a pair of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate, until a pixel that is max white would get hit again. The images aren't super scientific and don't necessarily match what actually happens in-game. Still, they give us some idea of the quality of the randomness.</p>
+        <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
+        <h3>PRNG</h3>
+        <p>These generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG state will be self-contained most of the time, but it's also not an uncommon practice to to mix in non-deterministic data to attempt to randomize the state more. Such data might be player input, modifying the state in different ways on value requests, using leftover results from other functions to alter the state, etc...</p>
+        <h3>Quality of randomness</h3>
+        <p>There are many ways to test the quality of PRNGs with tools such as DieHarder, TestU01, PractRand and the Hamming-weight dependecy test. We're not going to go super deep here (further explanation why below), and just run our generators through PractRand. Why PractRand specifically? It was easy to use and prints out a number of tests passed for us to look at.</p>
+        <h3>So... how much does this matter?</h3>
+        <p>Have you ever played Super Ghouls 'n Ghosts and thought to yourself that the monsters seem to do the same thing over and over again? No?<br>If I didn't tell you that the PRNG used in Goof Troop is broken, would you ever have known?</p>
+        <p>Almost all of these generators are going to fare badly in these test suites - they simply weren't made for applications like scientific simulations or cryptography. What's more, most of these generators run in a... "severely resource-constrained computing environment" as someone put it; in many cases it was simply not possible to spend more processing power on randomness because the rest of the game had to run as well, all within a 60th of a second.</p>
+        <p>Most of the time we're just deciding if a monster should go this way or that way, or what items a chest  should contain. Having a high quality source of randomness is of course great, but as long as the source is decent enough and used in clever ways you'd never know the randomness is of "low quality".</p>
+        <h3>Randograms</h3>
+        <p>The images below are made by generating pairs of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate. The images aren't really indicative of randomness quality, but we can still look at them and see if they look about right or if they have clear (non-random looking) patterns.</p>
         <hr>
 
         <button type="button" class="collapsible">Capcom: Using the frame counter</button>
         <div class="content">
         <p>This method has four state variables that are increased at their own rate every frame. When requesting a value, it cycles to the next state variable and adds a constant to it.</p>
         <p>The carry flag, which is used for the ADC operation, is set differently every time the Frame_update() function is called. This plus the added request constant makes this generator non-deterministic.</p>
-        <p>This image was generated by always setting the carry flag to false and simulating two PRNG requests per frame (which is likely way more frequent than what would ever happen in the actual game).</p>
+        <p>This image was generated by always setting the carry flag to false and simulating one PRNG request per frame.</p>
         <pre style="min-height:256px;"><img src="img/prng/ff.png" alt="" class="prng">u16 frame_counter = 0
 array[u8, 4] rng_state = (0, 0, 0, 0)
 u8 slot = 0
@@ -94,7 +102,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
     dst = result           <span>//store 8-bit result in the first operand</span>
 }
 
-<span>Period: 91463029 (w/o any Get_prng_value() calls & carry always false on start of update function)<br>Iterations before brightness overflow: 4457510</span></pre>
+<span>Period: 91463029 (w/o any Get_prng_value() calls & carry always false on start of update function)<br>PractRand tests passed: 40</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight - SNES (1990-12-21)<p style="font-style:italic;">Notes:<br>-</p></li>
@@ -104,7 +112,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
 
         <button type="button" class="collapsible">Capcom: An early LCG</button>
         <div class="content">
-        <p>Many early Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0. This setup (c=0) is also known as a Lehmer RNG.<br>Nothing fancy, but it gets the job done. Notice the uniform diagonal patterns in the generated image.</p>
+        <p>Many early Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0. This setup (c=0) is also known as a Lehmer RNG.<br>Nothing fancy, but it gets the job done. Note the uniform diagonal patterns in the generated image.</p>
         <pre style="min-height:256px;"><img src="img/prng/sgng.png" alt="" class="prng">u16 prng_state = 0x01C3
 
 u8 Get_prng_value()
@@ -113,7 +121,7 @@ u8 Get_prng_value()
     return rng_state >> 8
 }
 
-<span>Period: 2<sup>14</sup><br>Iterations before brightness overflow: 2088960</span></pre>
+<span>Period: 2<sup>14</sup><br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
@@ -133,7 +141,7 @@ u8 Get_prng_value()
     return rngState >> 8;
 }
 
-<span>Period: 2<sup>16</sup><br>Iterations before brightness overflow: 8355840</span></pre>
+<span>Period: 2<sup>16</sup><br>PractRand tests passed: 1</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
@@ -152,7 +160,7 @@ u8 Get_prng_value()
     return rng_state >> 8
 }
 
-<span>Period: 43534<br>Iterations before brightness overflow: 115894</span></pre>
+<span>Period: 43534<br>PractRand tests passed: 17</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
@@ -172,7 +180,7 @@ u8 Get_prng_value()
     return rng_state
 }
 
-<span>Period: 43534<br>Iterations before brightness overflow: 5550585</span></pre>
+<span>Period: 43534<br>PractRand tests passed: 22</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
@@ -185,7 +193,7 @@ u8 Get_prng_value()
 
         <button type="button" class="collapsible">Quintet: A state-of-the-art PRNG</button>
         <div class="content">
-        <p>Quintet employed a quite sophisticated PRNG for the time - the ACORN prng (with some modifications). While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
+        <p>Quintet employed a quite sophisticated PRNG for the time - the ACORN prng (or bearing a strong resemblance to it anyway). While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
         <pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
 
 u8 Get_prng_value()
@@ -210,7 +218,7 @@ u8 Get_prng_value()
     return rng_state[0] <span>//original code returns a 16 bit value but i strongly suspect it's only using 8 bits</span>
 }
 
-<span>Period: Too high to compute, likely 2<sup>128</sup><br>Iterations before brightness overflow: 12607491</span></pre>
+<span>Period: Too high to compute, possibly 2<sup>128</sup>?<br>PractRand tests passed: 81</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Room transitions write the frame counter to state[0-1].</p></li>
@@ -231,7 +239,7 @@ void Update_rng() <span>//called many times every other frame</span>
     rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
 }
 
-<span>Period: 2<sup>15</sup>-1<br>Iterations before brightness overflow: 8355585</span></pre>
+<span>Period: 2<sup>15</sup>-1<br>PractRand tests passed: 8</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">Notes:<br>4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: state[0] + state[1] = result).<br>In some cases on use, it even updates the state with different methods (like adding one state byte to another, or even adding outside sources like the frame counter).<br>These factors makes the output non-deterministic.</p></li>
@@ -241,7 +249,7 @@ void Update_rng() <span>//called many times every other frame</span>
 
         <button type="button" class="collapsible">Natsume: PRNG (unknown type)</button>
         <div class="content">
-        <p>Not sure what this is based on (if anything), but it appears to not have a very long period. It generates 28110 unique values, after which it falls into a stable and short repeating pattern (a period of 9281!). The generated image is bit dark due to the short period, but looks decent considering the circumstances!</p>
+        <p>Not sure what this is based on (if anything), but it appears to not have a very long period. It generates 28110 unique values, after which it falls into a stable and short repeating pattern (a period of 9281!). Even then, it looks rather decent considering the short period!</p>
         <pre style="min-height:256px;"><img src="img/prng/markdavis.png" alt="" class="prng">
 array [u16, 2] rng_state = [0, 0]
 
@@ -255,7 +263,7 @@ void Update_rng()
     rng_state[1] ^= rng_state[0]
 }
 
-<span>Period: 9281<br>Iterations before brightness overflow: 801026</span></pre>
+<span>Period: 9281<br>PractRand tests passed: 24</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Pocky & Rocky (1992-12-22)<p style="font-style:italic;">Notes:<br>-</p></li>
@@ -344,7 +352,7 @@ u8 Get_rng_value(u8 multiplicand)
     return (multiplicand * rng_table[offset]) >> 8
 }
 
-<span>Period: 2<sup>10</sup><br>Iterations before brightness overflow: 130560</span></pre>
+<span>Period: 2<sup>10</sup><br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Syvalion - SNES (1992-07-24)<p style="font-style:italic;">Notes:<br>Updates the offset every frame in the menu.</p></li>
@@ -369,17 +377,17 @@ u8 Get_prng_value()
     return state[1]
 }
 
-<span>Period: 12800<br>Iterations before brightness overflow: 1632000</span></pre>
+<span>Period: 12800<br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Super Smash TV (1992-02-??)<p style="font-style:italic;">Notes:<br>-</p></li>
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Many devs: compiler built-in randomness</button>
+        <button type="button" class="collapsible">Many devs: C's built-in randomness</button>
         <div class="content">
-        <p>As consoles and the tools around them advanced, the need to write everything from scratch decreased. Most games around the PS1 / N64 era were likely written in C for example, which typically gave you access to some form of the <i>C standard library:</i> pre-written general purpose code so you didn't have to write it yourself. And yes, there is a rand() function in there!</p>
-        <p>While rand() can be implemented in different ways as long as it fills some certain criterias, I think it's fair to say that most implementations, especially at that time were all the same: a LCG with a 2<sup>31</sup> period. The return value is the upper half of the state (minus the sign bit to stop careless devs from making mistakes, I'm sure), as the quality of the lower bits of a LCG are typically very poor.<br>By today's standards it would probably not seem so good, but compared to most earlier PRNGs we've seen it is pretty darn good! If you look closely you can still see a faint diagonal pattern in the image.</p>
+        <p>As consoles and the tools around them advanced, the need to write everything from scratch decreased. Most games around the PS1 / N64 era were likely written in C for example, which typically gave you access to some form of the <i>C standard library:</i> pre-written general purpose code so you didn't have to write it yourself. And yes, there's a rand() function in there!</p>
+        <p>While rand() can be implemented in different ways as long as it fills some certain criterias, I think it's fair to say that most implementations, especially at that time were all the same: a LCG with a 2<sup>31</sup> period. The return value is the upper half of the state (minus the sign bit to stop careless devs from making mistakes, I'm sure), as the quality of the lower bits of a LCG are typically very poor.<br>By today's standards it would probably not seem so good, but compared to most earlier PRNGs we've seen it is pretty darn good!</p>
         <p>As this was (is?) the standard rand() function in most C libraries, this PRNG has probably been used many, many times in countless games.</p>
         <pre style="min-height:256px;"><img src="img/prng/ansic.png" alt="" class="prng">
 u32 state = 0
@@ -390,7 +398,7 @@ i32 Get_prng_value()
     return (state >> 16) & 0x7FFF
 }
 
-<span>Period: 2<sup>31</sup><br>Iterations before brightness overflow: 15854216</span></pre>
+<span>Period: 2<sup>31</sup><br>PractRand tests passed: 26</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Magical Tetris Challenge, PS1 (1999-03-18)<p style="font-style:italic;">Notes:<br>Called twice during the intro, which effectively sets the starting state to 6.</p></li>

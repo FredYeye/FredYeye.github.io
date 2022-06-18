@@ -5,7 +5,7 @@
 </head><body>
 <div class="grid-container">
     <div class="item1">
-        <h1>Fred's game tech articles (title pending)</h1>
+        <h1>Fred's game tech articles</h1>
         <h2>Reverse engineering, retro game archeology and speedrun research</h2>
     </div>
 
@@ -75,7 +75,7 @@ return rng_state[0]                      <span>//return first byte of rng state 
 
 <span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
         <p class="note">Note: this function technically returns both rng_state[0] and rng_state[1] as one 16-bit value. I'm somewhat confident this is simply a shortcut by the developers however, and rng_state[1] isn't meant to be used.</p>
-        <p>The random number generator appears to be the <i>ACORN</i> random number generator, with some minor differences. That's cutting edge considering the game was released close to when it was first proposed!<br>This is a <i>pseudo random number generator;</i> it is deterministic by nature. True randomness in computing is a rather complicated topic and besides, PRNGs are perfectly fine when used correctly.</p>
+        <p>The random number generator appears somewhat similar to the <i>ACORN</i> random number generator. That's cutting edge considering the game was released close to when it was first proposed!<br>This is a <i>pseudo random number generator;</i> it is deterministic by nature. True randomness in computing is a rather complicated topic and besides, PRNGs are perfectly fine when used correctly.</p>
         <p>Speaking of using things correctly, the RNG state is initialized to all zeroes when starting the game...! The RNG function does have zero state prevention by incrementing the array after going through the add-with-carry part... however, it's quite common for a game to either:<br><span class="indent">1) continually run the RNG function every or every few frames, or</span><br><span class="indent">2) rapidly call the RNG function early on in the game, essentially seeding the RNG to achieve good randomness.</span></p>
         <p>So that's the initial RNG state. I then made a <span class="explanation" title="Tool Assisted Speedrun">TAS</span> recording up til the boss, mimicking Mcfly's movement to see what called the RNG... turns out it is only used for one thing: to create the explosion effects when killing bosses!</p>
         <p>Maybe they never ran into poor randomness even without proper seeding - after all, it's barely used in the action stages.</p>
