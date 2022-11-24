@@ -28,11 +28,11 @@
         <p>In just a matter of minutes I found the save encrypt/decrypt functions. I quickly whipped up a small C# program to accept a file to encrypt or decrypt. I could nearly use the game functions as-is; the only real change I had to make was to set the padding mode of the encryption to none. Could the default padding mode have changed since the game was released, perhaps?</p>
         <img src="img/article3/decrypted.png" alt="" class="center" style="width:636; height:243;">
         <p class="img_note">Decrypted data.</p>
-        <p>From there it was just a matter of mapping out what data was where in the file. Once again, having the source code for the save file writer made this a much simpler process. In my case, the item list started at byte 140. Every item is 6 bytes long. I found the item order in <i>ItemType.cs</i>, which has all the item types in a list.</p>
+        <p>From there it was just a matter of mapping out what data was where in the file. Once again, having the source code for the save file writer made this a much simpler process. I found the item order in <i>ItemType.cs</i>, which has all the item types in a list.</p>
         <p>As an example, let's add some extra <i>Adamantite</i>.</p>
         <img src="img/article3/itemlist.png" alt="" class="center" style="width:477; height:578;">
         <p class="img_note">ItemType.cs</p>
-        <p>So... Adamantite is item 14. 140 + 14 * 6 = 224, or 0xE0 in hex.</p>
+        <p>So... Adamantite is item 14. Each item is 6 bytes long and, in my case, the item list started at byte 140. 140 + 14 * 6 = 224, or 0xE0 in hex.</p>
         <img src="img/article3/adamantite.png" alt="" class="center" style="width:472; height:360;">
         <p class="img_note">Let's just add a liiittle bit extra...</p>
         <p>Fire up the game and...</p>
