@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - How random is... Death Condor (ActRaiser 2)</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">How random is... Death Condor? (ActRaiser 2)</h1>
+        <p class="date">2021-xx-xx</p>
+        <p>ActRaiser 2 is, as you might've guessed, the sequel to ActRaiser. Made on the request of Enix of America, the game thusly features no sim parts and only consists of action stages. It is an extremely difficult game and the controls feel rather clunky until you really get acquainted with them.</p>
+        <p>Few people have played this game and even fewer have tried their hand at speedrunning it, but one person has went above and beyond for this game - PJDicesare. PJ is running the game at an extremely high level; both precise execution and getting favorable random outcomes are hugely important.</p>
+        <img src="img/article3/deathcondor.png" alt="" class="center" style="width:585; height:448;">
+        <p>An early case of significant randomness appears in the shape of the <i>Death Condor</i> in Modero, the third stage of the speedrun. The miniboss hovers in the air and will either shoot fireballs or dive towards the player. The desired outcome is a dive; if it doesn't dive, we just have to wait out the fireballs until it dives.</p>
+        <p>PJ would frequently reset the game if the boss didn't dive, as it would cost too much time. At that time I was starting to learn how to inspect the inner workings of games and decided to see if I couldn't figure out just how random this boss truly is!</p>
+        <h3>Looking at the code</h3>
+        <p>The code to select action is rather straightforward, as can be seen below:</p>
+        <pre>Select_action()
+    Update_RNG()
+
+    if(rng_state[0] & 1) //if RNG value is odd
+    {
+        Dive()
+    }
+    else                 //if RNG value is even
+    {
+        Shoot()
+    }
+return
+
+<span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
+        <p>The game simply updates the RNG and checks if the updated value is even or odd to pick an action. The RNG is functionally identical to the one used in ActRaiser 1 (an Add-with-carry algorithm) with some slight adjustments to the code, so I won't go over it here again. See my previous <a href="article1.html#PRNGs">article</a> if you wish to see the code.</p>
+        <p>There was one important change made from ActRaiser 1 however: <i>there's no outside influence on the RNG state!</i> Screen transitions would alter the RNG state in a way that was impossible to control but this was removed for the sequel; it can now only be updated by calling the Update_RNG function when needed. This gives us much better chances for manipulating the RNG.</p>
+        <p>Having figured out the RNG, it was time to see if we could now track it up until Death Condor!</p>
+        <h3>TODO</h3>
+        <p>Feeling enthusiastic, I hopped on PJ's stream and reported my findings so far. He says "Great! Can we track the RNG up until the Modero boss?"<br>I quickly fired up the emulator, ready to watch for any changes in the RNG state and...</p>
+    </div>
+</div>
+</body></html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="style.css">
-<title>Fred's VG Tech articles - How random is... Death Condor (ActRaiser 2)</title>
+<title>Fred's VG Tech articles - Mercenary Kings: editing save data</title>
 </head><body>
 <div class="grid-container">
     <div class="item1">
@@ -14,34 +14,30 @@
     </div>
 
     <div class="item3">
-        <h1 class="post_title">How random is... Death Condor? (ActRaiser 2)</h1>
-        <p class="date">2021-xx-xx</p>
-        <p>ActRaiser 2 is, as you might've guessed, the sequel to ActRaiser. Made on the request of Enix of America, the game thusly features no sim parts and only consists of action stages. It is an extremely difficult game and the controls feel rather clunky until you really get acquainted with them.</p>
-        <p>Few people have played this game and even fewer have tried their hand at speedrunning it, but one person has went above and beyond for this game - PJDicesare. PJ is running the game at an extremely high level; both precise execution and getting favorable random outcomes are hugely important.</p>
-        <img src="img/article3/deathcondor.png" alt="" class="center" style="width:585; height:448;">
-        <p>An early case of significant randomness appears in the shape of the <i>Death Condor</i> in Modero, the third stage of the speedrun. The miniboss hovers in the air and will either shoot fireballs or dive towards the player. The desired outcome is a dive; if it doesn't dive, we just have to wait out the fireballs until it dives.</p>
-        <p>PJ would frequently reset the game if the boss didn't dive, as it would cost too much time. At that time I was starting to learn how to inspect the inner workings of games and decided to see if I couldn't figure out just how random this boss truly is!</p>
-        <h3>Looking at the code</h3>
-        <p>The code to select action is rather straightforward, as can be seen below:</p>
-        <pre>Select_action()
-    Update_RNG()
-
-    if(rng_state[0] & 1) //if RNG value is odd
-    {
-        Dive()
-    }
-    else                 //if RNG value is even
-    {
-        Shoot()
-    }
-return
-
-<span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
-        <p>The game simply updates the RNG and checks if the updated value is even or odd to pick an action. The RNG is functionally identical to the one used in ActRaiser 1 (an Add-with-carry algorithm) with some slight adjustments to the code, so I won't go over it here again. See my previous <a href="article1.html#PRNGs">article</a> if you wish to see the code.</p>
-        <p>There was one important change made from ActRaiser 1 however: <i>there's no outside influence on the RNG state!</i> Screen transitions would alter the RNG state in a way that was impossible to control but this was removed for the sequel; it can now only be updated by calling the Update_RNG function when needed. This gives us much better chances for manipulating the RNG.</p>
-        <p>Having figured out the RNG, it was time to see if we could now track it up until Death Condor!</p>
-        <h3>TODO</h3>
-        <p>Feeling enthusiastic, I hopped on PJ's stream and reported my findings so far. He says "Great! Can we track the RNG up until the Modero boss?"<br>I quickly fired up the emulator, ready to watch for any changes in the RNG state and...</p>
+        <h1 class="post_title">Mercenary Kings: editing save data</h1>
+        <p class="date">2022-11-24</p>
+        <p>I've been playing through <i>Mercenary Kings</i> recently and while fun, the last few <i>cheevos</i> requires you to find a lot of materials for crafting.<br>To speed up the process I went to check if i could edit the save file and add lots of materials, as you do.</p>
+        <p>I opened up the save file in a hex editor and couldn't really make out any of the data in it. I gathered some material and compared the old save file with the new file... it looked like a completely different garbled mess! Did they encrypt the save files?!</p>
+        <p>Instead of accepting loss and farming materials, I decided to try to decompile the game for leads on how to decrypt the save files, naturally.</p>
+        <h3>Finding the right tool for the job!</h3>
+        <p>My first approach was to open the game executable in <i>Ghidra</i>, a reverse engineering tool, and it got stuck on loading the file.<br>A quick google search for the error message I received revealed that Ghidra was not the right tool for this job - I had a <i>.NET executable</i> on my hands!<br>I might get back to Ghidra in a later article, but for now we have to look for another tool.</p>
+        <p>My knowledge of XNA / .NET / C# is not so good, so excuse me for any mixed up terminology I might use, haha. In any case, what I wanted was in fact a <i>.NET decompiler</i>, so I downloaded and ran <i>dotPeek</i>. I didn't really know what the output would look like, but I figured it might be easier to read than whatever Ghidra produces and...</p>
+        <img src="img/article3/decompile.png" alt="" class="center" style="width:981; height:527;">
+        <p class="img_note">Well! What is it?</p>
+        <p>...and... everything is just... <i>there!</i> All the code of the game: functions, variables, all the bells and whistles, it's all there with original names and everything. Suddenly this venture, which seemed somewhat futile, felt incredibly <i>doable</i>.</p>
+        <p>In just a matter of minutes I found the save encrypt/decrypt functions. I quickly whipped up a small C# program to accept a file to encrypt or decrypt. I could nearly use the game functions as-is; the only real change I had to make was to set the padding mode of the encryption to none. Could the default padding mode have changed since the game was released, perhaps?</p>
+        <img src="img/article3/decrypted.png" alt="" class="center" style="width:636; height:243;">
+        <p class="img_note">Decrypted data.</p>
+        <p>From there it was just a matter of mapping out what data was where in the file. Once again, having the source code for the save file writer made this a much simpler process. In my case, the item list started at byte 140. Every item is 6 bytes long. I found the item order in <i>ItemType.cs</i>, which has all the item types in a list.</p>
+        <p>As an example, let's add some extra <i>Adamantite</i>.</p>
+        <img src="img/article3/itemlist.png" alt="" class="center" style="width:477; height:578;">
+        <p class="img_note">ItemType.cs</p>
+        <p>So... Adamantite is item 14. 140 + 14 * 6 = 224, or 0xE0 in hex.</p>
+        <img src="img/article3/adamantite.png" alt="" class="center" style="width:472; height:360;">
+        <p class="img_note">Let's just add a liiittle bit extra...</p>
+        <p>Fire up the game and...</p>
+        <img src="img/article3/inventory.png" alt="" class="center" style="width:812; height:732;">
+        <p>...tadah! You can even give yourself other kinds of items like gun parts, knives and ornaments to name a few. Lots of money and materials will do for me, though!</p>
     </div>
 </div>
 </body></html>
