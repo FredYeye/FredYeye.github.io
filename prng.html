@@ -43,16 +43,15 @@ img.prng { width:256; height:256; float:right; }
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2022-10-06</p>
+        <p class="date">Last edited: 2022-11-30</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <h3>PRNG</h3>
         <p>These generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG state will be self-contained most of the time, but it's also not an uncommon practice to to mix in non-deterministic data to attempt to randomize the state more. Such data might be player input, modifying the state in different ways on value requests, using leftover results from other functions to alter the state, etc...</p>
         <h3>Quality of randomness</h3>
-        <p>There are many ways to test the quality of PRNGs with tools such as DieHarder, TestU01, PractRand and the Hamming-weight dependecy test. We're not going to go so deep (further explanation why below) and just run our generators through PractRand. Why PractRand specifically? It's easy to use and prints out a fun number of tests passed for us to look at.</p>
-        <!-- <h3>So... how much does this matter?</h3> -->
+        <p>There are many ways to test the quality of PRNGs. We're going to keep it simple (explanation why below) and just run our generators through PractRand. Why PractRand? It's easy to use and prints out a fun number of tests passed for us to look at. Don't put too much stock into this number: it's just one part of PractRand's output and can vary depending on how fast the prng implementation runs, for example.</p>
         <p>So... have you ever played Super Ghouls 'n Ghosts and thought to yourself that the monsters seem to do the same thing over and over again? No?<br>If I didn't tell you that the PRNG used in Goof Troop is broken, would you ever have known?</p>
-        <p>Almost all of these generators are going to fare badly in these test suites - they simply weren't made for applications like scientific simulations or cryptography. In many cases it was simply not possible to spend more processing power on randomness because the rest of the game had to run as well, all within a 60th of a second.</p>
+        <p>Almost all of these generators are going to fare badly in test suites - they simply weren't made for applications like scientific simulations or cryptography. In many cases it was simply not possible to spend more processing power on randomness because the rest of the game had to run as well, all within a 60th of a second.</p>
         <p>Most of the time we're just deciding if a monster should go this way or that way, or what items a chest  should contain. Having a high quality source of randomness is of course great, but as long as the source is decent enough and used in clever ways you'd never know the randomness is of "low quality".</p>
         <h3>Randograms</h3>
         <p>The images below are made by generating pairs of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate. The images aren't really indicative of randomness quality, but we can still look at them and see if they look about right or if they have clear (non-random looking) patterns.</p>
@@ -468,10 +467,41 @@ u8 Get_prng_value()
     return state[1]
 }
 
-<span>Period: 5668926</sup><br>PractRand tests passed: 48</span></pre>
+<span>Period: 5668926<br>PractRand tests passed: 48</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Harvest Moon (1996-08-09)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        </ul>
+        </div>
+
+        <button type="button" class="collapsible">Halken: LFSR with bounds</button>
+        <div class="content">
+        <p>At first I thought I had stumbled upon another intricate homebrew PRNG, but no! All that complicated-looking assembly code boiled down to a simple LFSR that gets updated several times per call. It allows for setting an upper bound of the returned value, at least!</p>
+        <p>Reducing the amount of LFSR shifts per call (from 11 to 9) makes this prng pass more PractRand tests, funnily enough.</p>
+        <pre style="min-height:256px;"><img src="img/prng/alcahest.png" alt="" class="prng">u16 state = 0x7777
+
+u8 Get_prng_value(u8 bound)
+{
+    for(x = 0; x < 11; x++)
+    {
+        bool feedback = (state ^ (state >> 1) ^ (state >> 15) ^ 1) & 1;
+        state = (state << 1) | feedback;
+    }
+
+    if bound == 0
+    {
+        return state as u8; <span>//return lower byte as-is (0 - 255)</span>
+    }
+    else
+    {
+        return (bound * (state & 0xFF) >> 8; <span>//value is capped (0 - bound-1)</span>
+    }
+}
+
+<span>Period: 2<sup>16</sup>-2<br>PractRand tests passed: 10</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Alcahest (1993-12-17)<p style="font-style:italic;">Notes:<br>Only called on demand.</p></li>
         </ul>
         </div>
     </div>
