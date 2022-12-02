@@ -494,7 +494,7 @@ u8 Get_prng_value(u8 bound)
     }
     else
     {
-        return (bound * (state & 0xFF) >> 8; <span>//value is capped (0 - bound-1)</span>
+        return (bound * (state & 0xFF)) >> 8; <span>//value is capped (0 - bound-1)</span>
     }
 }
 
