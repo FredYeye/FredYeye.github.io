@@ -1,35 +1,8 @@
 <!DOCTYPE html><html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="style.css">
-<style>
-img.prng { width:256; height:256; float:right; }
-
-.collapsible {
-    background-color: rgb(40,40,40);
-    color:rgb(220,220,220);
-    cursor: pointer;
-    padding: 18px;
-    width:100%;
-    border: none;
-    text-align: left;
-    font-weight: normal;
-    font-size:28px;
-    text-shadow:2px 2px 3px rgb(5,5,5);
-}
-
-.active, .collapsible:hover { background-color: rgb(50,50,50); }
-
-.content {
-    background-color: rgb(30,30,30);
-    padding-top: 10px;
-    padding-bottom: 10px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.45s ease-out;
-}
-</style>
-<script src="coll.js" defer></script>
 <title>Fred's VG Tech articles - Random Number Generators</title>
+<script src="coll.js" defer></script>
 </head><body>
 <div class="grid-container">
     <div class="item1">
@@ -43,21 +16,20 @@ img.prng { width:256; height:256; float:right; }
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2022-11-30</p>
-        <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms games employ to create randomness.</p>
+        <p class="date">Last edited: 2023-02-08</p>
+        <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms and methods games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <h3>PRNG</h3>
-        <p>These generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG state will be self-contained most of the time, but it's also not an uncommon practice to to mix in non-deterministic data to attempt to randomize the state more. Such data might be player input, modifying the state in different ways on value requests, using leftover results from other functions to alter the state, etc...</p>
+        <p>Most of these generators are <i>Pseudo-Random Number Generators</i>, or PRNGs for short. What this means is that they are deterministic; they are not <i>truly</i> random. The PRNG state will be self-contained most of the time, but it's also not an uncommon practice to to mix in non-deterministic data to attempt to randomize the state more. Such data might be player input, modifying the state in different ways on value requests, using leftover results from other functions to alter the state, etc...</p>
         <h3>Quality of randomness</h3>
-        <p>There are many ways to test the quality of PRNGs. We're going to keep it simple (explanation why below) and just run our generators through PractRand. Why PractRand? It's easy to use and prints out a fun number of tests passed for us to look at. Don't put too much stock into this number: it's just one part of PractRand's output and can vary depending on how fast the prng implementation runs, for example.</p>
-        <p>So... have you ever played Super Ghouls 'n Ghosts and thought to yourself that the monsters seem to do the same thing over and over again? No?<br>If I didn't tell you that the PRNG used in Goof Troop is broken, would you ever have known?</p>
-        <p>Almost all of these generators are going to fare badly in test suites - they simply weren't made for applications like scientific simulations or cryptography. In many cases it was simply not possible to spend more processing power on randomness because the rest of the game had to run as well, all within a 60th of a second.</p>
-        <p>Most of the time we're just deciding if a monster should go this way or that way, or what items a chest  should contain. Having a high quality source of randomness is of course great, but as long as the source is decent enough and used in clever ways you'd never know the randomness is of "low quality".</p>
+        <p>Almost all of these generators are going to fare badly in tests - they simply weren't made for applications like scientific simulations or cryptography. In many cases it was simply not feasible to spend more processing power on randomness because the rest of the game had to run as well, all within a 60th of a second.<br>Having a high quality source of randomness is of course great, but as long as the source is decent enough and used in clever ways you'd never know the randomness is of "low quality".</p>
+        <p>There are many ways to test the quality of PRNGs but we're going to keep it simple and just run our generators through PractRand: it's easy to use and prints out a number of tests passed for us to look at. The test is capped to X (2^25?) bits (Y MBs).</p>
+        <p><em class="nondeterministic">Non-deterministic</em> generators won't have a PractRand result. Generators that have both <em class="hybrid">deterministic and non-deterministic parts (hybrid)</em> are tested without their non-deterministic part.</p>
         <h3>Randograms</h3>
         <p>The images below are made by generating pairs of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate. The images aren't really indicative of randomness quality, but we can still look at them and see if they look about right or if they have clear (non-random looking) patterns.</p>
         <hr>
 
-        <button type="button" class="collapsible">Capcom: Using the frame counter</button>
+        <button type="button" class="collapsible hybrid">Capcom: Using the frame counter</button>
         <div class="content">
         <p>This method has four state variables that are increased at their own rate every frame. When requesting a value, it cycles to the next state variable and adds a constant to it.</p>
         <p>The carry flag, which is used for the ADC operation, is set differently every time the Frame_update() function is called. This plus the added request constant makes this generator non-deterministic.</p>
@@ -109,7 +81,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Capcom: Cascading adds</button>
+        <button type="button" class="collapsible hybrid">Capcom: Cascading adds</button>
         <div class="content">
         <p>This one shares some similarity with their earlier arcade PRNG (and to Quintet's PRNG). A LFSR-style shift is performed on the first element, followed by a series of adds throughout the state (while adding in a unique constant per element).</p>
         <p>As far as I can tell, every function that needs randomness has a hardcoded slot it picks a number from, and then adds a constant back to that slot. It's different for every function so it's possible that there are functions that do other types of scrambling, akin to Mega Man 5 (change other slots, combine slot values, etc).</p>
@@ -154,7 +126,7 @@ u16 get_rng(u8 slot, u16 constant)
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Capcom: An early LCG</button>
+        <button type="button" class="collapsible deterministic">Capcom: An early LCG</button>
         <div class="content">
         <p>Many early Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0. This setup (c=0) is also known as a Lehmer RNG.<br>Nothing fancy, but it gets the job done. Note the uniform diagonal patterns in the generated image.</p>
         <pre style="min-height:256px;"><img src="img/prng/sgng.png" alt="" class="prng">u16 prng_state = 0x01C3
@@ -174,7 +146,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Capcom: Another LCG</button>
+        <button type="button" class="collapsible deterministic">Capcom: Another LCG</button>
         <div class="content">
         <p>This time we have an LCG with m=2<sup>16</sup>, c=15329.</p>
         <pre style="min-height:256px;"><img src="img/prng/ff2.png" alt="" class="prng">u16 prng_state = 0
@@ -192,7 +164,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Capcom: The broken PRNG!</button>
+        <button type="button" class="collapsible deterministic">Capcom: The broken PRNG!</button>
         <div class="content">
         <p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here! The algorithm itself is fine - it's actually an improvement over their previous LCG. They just used the wrong half of the rng state as a return value!</p>
         <pre style="min-height:256px;"><img src="img/prng/gt.png" alt="" class="prng">u16 prng_state = 0x01C3
@@ -212,7 +184,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Capcom: The fixed PRNG</button>
+        <button type="button" class="collapsible deterministic">Capcom: The fixed PRNG</button>
         <div class="content">
         <p>Luckily Capcom realized something wasn't quite right and fixed the return value issue. The initial state was also updated. The generated image has much less apparent symmetry compared to the earlier LCG.</p>
         <pre style="min-height:256px;"><img src="img/prng/dc.png" alt="" class="prng">u16 prng_state = 0x0D37
@@ -235,7 +207,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Quintet: A state-of-the-art PRNG</button>
+        <button type="button" class="collapsible deterministic">Quintet: A state-of-the-art PRNG</button>
         <div class="content">
         <p>Quintet employed a quite sophisticated PRNG for the time - the ACORN prng (or bearing a strong resemblance to it anyway). While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
         <pre style="min-height:256px;"><img src="img/prng/ar.png" alt="" class="prng">array[u8, 16] rng_state <span>//16 byte array, initialized to all 0s</span>
@@ -265,10 +237,10 @@ u8 Get_prng_value()
 <span>Period: Too high to compute, possibly 2<sup>128</sup>?<br>PractRand tests passed: 81</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Room transitions write the frame counter to state[0-1].</p></li>
+        <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br><em class="nondeterministic">Room transitions write the frame counter to state[0-1].</em></p></li>
         <li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
         <li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
-        <li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br>Screen transitions writes the frame counter to state[2-3].</p></li>
+        <li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br><em class="nondeterministic">Screen transitions writes the frame counter to state[2-3].</em></p></li>
         </ul>
         </div>
 
@@ -286,12 +258,12 @@ void Update_rng() <span>//called many times every other frame</span>
 <span>Period: 2<sup>15</sup>-1<br>PractRand tests passed: 8</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">Notes:<br>4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: state[0] + state[1] = result).<br>In some cases on use, it even updates the state with different methods (like adding one state byte to another, or even adding outside sources like the frame counter).<br>These factors makes the output non-deterministic.</p></li>
+        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">Notes:<br>4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: result = state[0] + state[1].<br><em class="nondeterministic">In some cases, the state gets updated with different methods on use (like adding one state byte to another, or even adding outside sources like the frame counter).</em></p></li>
         <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Natsume: PRNG (unknown type)</button>
+        <button type="button" class="collapsible deterministic">Natsume: PRNG (unknown type)</button>
         <div class="content">
         <p>Not sure what this is based on (if anything), but it appears to not have a very long period. It generates 28110 unique values, after which it falls into a stable and short repeating pattern (a period of 9281!). Even then, it looks rather decent considering the short period!</p>
         <pre style="min-height:256px;"><img src="img/prng/markdavis.png" alt="" class="prng">array [u16, 2] rng_state = [0, 0]
@@ -314,7 +286,7 @@ void Update_rng()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Taito: Randomness with an upper limit (and pre-generated values)</button>
+        <button type="button" class="collapsible deterministic">Taito: Randomness with an upper limit (and pre-generated values)</button>
         <div class="content">
         <p>This generator has a big pre-generated table of values - four runs of 0-255 scrambled together. Rather than just returning a value from the table, it gets multiplied with a value the calling code supplies. This value acts as an upper limit: for example, <i>Get_rng_value(0x67)</i> would return a value in the range 0x00-0x66. While certainly convenient, the quality isn't great.</p>
         <p>This image was generated by setting a limit of 192 (0-191) to clearly demonstrate what the limiting value does. Setting the limit lower will make a smaller but denser box, and the opposite with a higher value.</p>
@@ -401,7 +373,7 @@ u8 Get_rng_value(u8 multiplicand)
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Williams / Beam Software: Smash TV PRNG</button>
+        <button type="button" class="collapsible deterministic">Williams / Beam Software: Smash TV PRNG</button>
         <div class="content">
         <p>Perhaps not the best PRNG, but it sure creates a funky image!</p>
         <pre style="min-height:256px;"><img src="img/prng/smashtv.png" alt="" class="prng">array [u8, 2] state = [0, 0]
@@ -425,7 +397,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Many devs: C's built-in randomness</button>
+        <button type="button" class="collapsible deterministic">Many devs: C's built-in randomness</button>
         <div class="content">
         <p>As consoles and the tools around them advanced, the need to write everything from scratch decreased. Most games around the PS1 / N64 era were likely written in C for example, which typically gave you access to some form of the <i>C standard library:</i> pre-written general purpose code so you didn't have to write it yourself. And yes, there's a rand() function in there!</p>
         <p>While rand() can be implemented in different ways as long as it fills some certain criterias, I think it's fair to say that most implementations, especially at that time were all the same: a LCG with a 2<sup>31</sup> period. The return value is the upper half of the state (minus the sign bit to stop careless devs from making mistakes, I'm sure), as the quality of the lower bits of a LCG are typically very poor.<br>By today's standards it would probably not seem so good, but compared to most earlier PRNGs we've seen it is pretty darn good!</p>
@@ -445,7 +417,7 @@ u16 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Amccus: PRNG (unknown type)</button>
+        <button type="button" class="collapsible deterministic">Amccus: PRNG (unknown type)</button>
         <div class="content">
         <p>This one does some fancy rotates and adds, making good use of the carry flag. Decent results for 24 bits of state.</p>
         <pre style="min-height:256px;"><img src="img/prng/harvestmoon.png" alt="" class="prng">array [u8, 3] state = [0, 0, 0]
@@ -474,7 +446,7 @@ u8 Get_prng_value()
         </ul>
         </div>
 
-        <button type="button" class="collapsible">Halken: LFSR with bounds</button>
+        <button type="button" class="collapsible deterministic">Halken: LFSR with bounds</button>
         <div class="content">
         <p>At first I thought I had stumbled upon another intricate homebrew PRNG, but no! All that complicated-looking assembly code boiled down to a simple LFSR that gets updated several times per call. It allows for setting an upper bound of the returned value, at least!</p>
         <p>Reducing the amount of LFSR shifts per call (from 11 to 9) makes this prng pass more PractRand tests, funnily enough.</p>
@@ -484,17 +456,17 @@ u8 Get_prng_value(u8 bound)
 {
     for(x = 0; x < 11; x++)
     {
-        bool feedback = (state ^ (state >> 1) ^ (state >> 15) ^ 1) & 1;
-        state = (state << 1) | feedback;
+        bool feedback = (state ^ (state >> 1) ^ (state >> 15) ^ 1) & 1
+        state = (state << 1) | feedback
     }
 
     if bound == 0
     {
-        return state as u8; <span>//return lower byte as-is (0 - 255)</span>
+        return state as u8 <span>//return lower byte as-is (0 - 255)</span>
     }
     else
     {
-        return (bound * (state & 0xFF)) >> 8; <span>//value is capped (0 - bound-1)</span>
+        return (bound * (state & 0xFF)) >> 8 <span>//value is capped (0 - bound-1)</span>
     }
 }
 
@@ -502,6 +474,35 @@ u8 Get_prng_value(u8 bound)
         <p>Games known to use this PRNG:</p>
         <ul>
         <li>Alcahest (1993-12-17)<p style="font-style:italic;">Notes:<br>Only called on demand.</p></li>
+        </ul>
+        </div>
+
+        <button type="button" class="collapsible nondeterministic">Kemco: Scanline counters</button>
+        <div class="content">
+        <p>When a random number is needed, the current drawing position is queried and added to the previous value.</p>
+        <pre style="min-height:256px;"><span>//ppu = picture processing unit</span>
+<span>//h_counter = 9-bit value, 0-339</span>
+<span>//v_counter = 9-bit value, 0-261 (sometimes 262)</span>
+
+u8 state = 0
+
+u8 rand()
+{
+    ppu.read_SLHV() <span>//update H/V counters to current drawing position</span>
+    u16 temp = state + (ppu.h_counter & 0xFF) <span>//temp bit 8 = carry</span>
+    state = temp
+
+    if ppu.v_counter < 256
+    {
+        state += temp >> 8 <span>//carry from previous add</span>
+        state += ppu.v_counter
+    }
+
+    return state
+}</pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Dragon View (1994-08-26)<p style="font-style:italic;">Notes:<br>Only called on demand.</p></li>
         </ul>
         </div>
     </div>
