@@ -16,7 +16,7 @@
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2023-02-08</p>
+        <p class="date">Last edited: 2023-02-09</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms and methods games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <h3>PRNG</h3>
@@ -76,8 +76,8 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
 <span>Period: 91463029 (w/o any Get_prng_value() calls & carry always false on start of update function)<br>PractRand tests passed: 40</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Final Fight - SNES (1990-12-21)<p style="font-style:italic;">Notes:<br>-</p></li>
-        <li>Breath of Fire (1993-04-03)<p style="font-style:italic;">Notes:<br>-</p></li>
+        <li>Final Fight - SNES (1990-12-21)</li>
+        <li>Breath of Fire (1993-04-03)</li>
         </ul>
         </div>
 
@@ -122,7 +122,7 @@ u16 get_rng(u8 slot, u16 constant)
 <span>Period: Unknown. Has 128 bits of state so it's probably long<br>PractRand tests passed: 31(lower) / 92(upper)</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Dungeons & Dragons: Tower of Doom (1994-01-13)<p style="font-style:italic;">Notes:<br>-</p></li>
+        <li>Dungeons & Dragons: Tower of Doom (1994-01-13)</li>
         </ul>
         </div>
 
@@ -140,9 +140,9 @@ u8 Get_prng_value()
 <span>Period: 2<sup>14</sup><br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
-        <li>The Magical Quest Starring Mickey Mouse (1992-11-20)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>No attempts at seeding the state.<br>Resets the state at every new stage.</p></li>
-        <li>Aladdin (1993-11-21)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
+        <li>Super Ghouls 'n Ghosts (1991-10-04)<p style="font-style:italic;">Called on demand only.<br>Used heavily in stage 1, which will "seed" the state.</p></li>
+        <li>The Magical Quest Starring Mickey Mouse (1992-11-20)<p style="font-style:italic;">Called on demand only.<br>No attempts at seeding the state.<br>Resets the state at every new stage.</p></li>
+        <li>Aladdin (1993-11-21)<p style="font-style:italic;">Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
         </ul>
         </div>
 
@@ -160,7 +160,7 @@ u8 Get_prng_value()
 <span>Period: 2<sup>16</sup><br>PractRand tests passed: 1</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Called on demand only.</p></li>
         </ul>
         </div>
 
@@ -179,8 +179,8 @@ u8 Get_prng_value()
 <span>Period: 43534<br>PractRand tests passed: 17</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
-        <li>The Great Circus Mystery Starring Mickey & Minnie (1994-10-??)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
+        <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Called on demand only.</p></li>
+        <li>The Great Circus Mystery Starring Mickey & Minnie (1994-10-??)<p style="font-style:italic;">Called on demand only.</p></li>
         </ul>
         </div>
 
@@ -199,11 +199,11 @@ u8 Get_prng_value()
 <span>Period: 43534<br>PractRand tests passed: 22</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-        <li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-        <li>Mega Man X2 (1994-12-16)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-        <li>Mega Man 7 (1995-03-24)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
-        <li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Mega Man X (1993-12-17)<p style="font-style:italic;">Called every frame and on demand.</p></li>
+        <li>Demon's Crest (1994-10-21)<p style="font-style:italic;">Called every frame and on demand.</p></li>
+        <li>Mega Man X2 (1994-12-16)<p style="font-style:italic;">Called every frame and on demand.</p></li>
+        <li>Mega Man 7 (1995-03-24)<p style="font-style:italic;">Called every frame and on demand.</p></li>
+        <li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Called every frame and on demand.</p></li>
         </ul>
         </div>
 
@@ -237,10 +237,10 @@ u8 Get_prng_value()
 <span>Period: Too high to compute, possibly 2<sup>128</sup>?<br>PractRand tests passed: 81</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Notes:<br>Called on demand only.<br><em class="nondeterministic">Room transitions write the frame counter to state[0-1].</em></p></li>
-        <li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Notes:<br>Called on demand only.</p></li>
-        <li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
-        <li>Robotrek (1994-07-08)<p style="font-style:italic;">Notes:<br>Called on demand only.<br>First town frequently calls the prng.<br><em class="nondeterministic">Screen transitions writes the frame counter to state[2-3].</em></p></li>
+        <li>ActRaiser 1 (1990-12-16)<p style="font-style:italic;">Called on demand only.<br><em class="nondeterministic">Room transitions write the frame counter to state[0-1].</em></p></li>
+        <li>Soul Blazer (1992-01-31)<p style="font-style:italic;">Called on demand only.</p></li>
+        <li>ActRaiser 2 (1993-10-29)<p style="font-style:italic;">Called on demand only.<br>First intended stage "seeds" the rng (player is free to choose any starting stage however).</p></li>
+        <li>Robotrek (1994-07-08)<p style="font-style:italic;">Called on demand only.<br>First town frequently calls the prng.<br><em class="nondeterministic">Screen transitions writes the frame counter to state[2-3].</em></p></li>
         </ul>
         </div>
 
@@ -258,8 +258,8 @@ void Update_rng() <span>//called many times every other frame</span>
 <span>Period: 2<sup>15</sup>-1<br>PractRand tests passed: 8</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">Notes:<br>4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: result = state[0] + state[1].<br><em class="nondeterministic">In some cases, the state gets updated with different methods on use (like adding one state byte to another, or even adding outside sources like the frame counter).</em></p></li>
-        <li>SOS (1993-05-28)<p style="font-style:italic;">Notes:<br>From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
+        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: result = state[0] + state[1].<br><em class="nondeterministic">In some cases, the state gets updated with different methods on use (like adding one state byte to another, or even adding outside sources like the frame counter).</em></p></li>
+        <li>SOS (1993-05-28)<p style="font-style:italic;">From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
         </ul>
         </div>
 
@@ -281,8 +281,8 @@ void Update_rng()
 <span>Period: 9281<br>PractRand tests passed: 24</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Pocky & Rocky (1992-12-22)<p style="font-style:italic;">Notes:<br>-</p></li>
-        <li>Mark Davis' The Fishing Master (1995-06-30)<p style="font-style:italic;">Notes:<br>Called every frame (except loading frames) and on demand.<br>The game appears to mainly (only?) use state[1] for rng: the most significant bit for coinflips, and the least significant bits for most other things.</p></li>
+        <li>Pocky & Rocky (1992-12-22)</li>
+        <li>Mark Davis' The Fishing Master (1995-06-30)<p style="font-style:italic;">Called every frame (except loading frames) and on demand.<br>The game appears to mainly (only?) use state[1] for rng: the most significant bit for coinflips, and the least significant bits for most other things.</p></li>
         </ul>
         </div>
 
@@ -369,7 +369,7 @@ u8 Get_rng_value(u8 multiplicand)
 <span>Period: 2<sup>10</sup><br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Syvalion - SNES (1992-07-24)<p style="font-style:italic;">Notes:<br>Updates the offset every frame in the menu.</p></li>
+        <li>Syvalion - SNES (1992-07-24)<p style="font-style:italic;">Updates the offset every frame in the menu.</p></li>
         </ul>
         </div>
 
@@ -393,7 +393,7 @@ u8 Get_prng_value()
 <span>Period: 12800<br>PractRand tests passed: 0</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Super Smash TV (1992-02-??)<p style="font-style:italic;">Notes:<br>-</p></li>
+        <li>Super Smash TV (1992-02-??)</li>
         </ul>
         </div>
 
@@ -413,7 +413,7 @@ u16 Get_prng_value()
 <span>Period: 2<sup>31</sup><br>PractRand tests passed: 26</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Magical Tetris Challenge, PS1 (1999-03-18)<p style="font-style:italic;">Notes:<br>Called twice during the intro, which effectively sets the starting state to 6.</p></li>
+        <li>Magical Tetris Challenge, PS1 (1999-03-18)<p style="font-style:italic;">Called twice during the intro, which effectively sets the starting state to 6.</p></li>
         </ul>
         </div>
 
@@ -442,7 +442,7 @@ u8 Get_prng_value()
 <span>Period: 5668926<br>PractRand tests passed: 48</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Harvest Moon (1996-08-09)<p style="font-style:italic;">Notes:<br>Called every frame and on demand.</p></li>
+        <li>Harvest Moon (1996-08-09)<p style="font-style:italic;">Called every frame and on demand.</p></li>
         </ul>
         </div>
 
@@ -473,7 +473,7 @@ u8 Get_prng_value(u8 bound)
 <span>Period: 2<sup>16</sup>-2<br>PractRand tests passed: 10</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Alcahest (1993-12-17)<p style="font-style:italic;">Notes:<br>Only called on demand.</p></li>
+        <li>Alcahest (1993-12-17)<p style="font-style:italic;">Only called on demand.</p></li>
         </ul>
         </div>
 
@@ -502,7 +502,29 @@ u8 rand()
 }</pre>
         <p>Games known to use this PRNG:</p>
         <ul>
-        <li>Dragon View (1994-08-26)<p style="font-style:italic;">Notes:<br>Only called on demand.</p></li>
+        <li>Dragon View (1994-08-26)<p style="font-style:italic;">Only called on demand.</p></li>
+        </ul>
+        </div>
+
+        <button type="button" class="collapsible nondeterministic">Konami: Frame counter summing</button>
+        <div class="content">
+        <p>When all work is done in a frame, the frame counter gets continously added to the rng state until the next frame starts. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
+        <pre style="min-height:256px;">u8 state = 0
+
+void run_game_frame()
+{
+    <span>//game code here...</span>
+
+    <span>//...done running game code for this frame.</span>
+
+    while NMI == false <span>//repeat until a new frame starts</span>
+    {
+        state += frame_counter <span>//frame_counter is a u8 value that increments every frame</span>
+    }
+}</pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Castlevania II: Simon's Quest (1987-08-28)</li>
         </ul>
         </div>
     </div>
