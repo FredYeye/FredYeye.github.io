@@ -509,17 +509,20 @@ u8 rand()
         <button type="button" class="collapsible nondeterministic">Konami: Frame counter summing</button>
         <div class="content">
         <p>When all work is done in a frame, the frame counter gets added continously to the rng state for the rest of the frame. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
-        <pre style="min-height:256px;">u8 state = 0
+        <pre style="min-height:256px;">u8 frame_counter = 0
+u8 state = 0
 
 void run_game_frame()
 {
+    frame_counter += 1
+
     <span>//game code here...</span>
 
     <span>//...done running game code for this frame.</span>
 
     while NMI == false <span>//repeat until a new frame starts</span>
     {
-        state += frame_counter <span>//frame_counter is a u8 value that increments every frame</span>
+        state += frame_counter
     }
 }</pre>
         <p>Games known to use this PRNG:</p>
