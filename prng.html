@@ -16,7 +16,7 @@
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2023-02-09</p>
+        <p class="date">Last edited: 2023-02-10</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms and methods games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <h3>PRNG</h3>
@@ -508,7 +508,7 @@ u8 rand()
 
         <button type="button" class="collapsible nondeterministic">Konami: Frame counter summing</button>
         <div class="content">
-        <p>When all work is done in a frame, the frame counter gets continously added to the rng state until the next frame starts. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
+        <p>When all work is done in a frame, the frame counter gets added continously to the rng state for the rest of the frame. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
         <pre style="min-height:256px;">u8 state = 0
 
 void run_game_frame()
