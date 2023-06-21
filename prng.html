@@ -16,7 +16,7 @@
 
     <div class="item3">
         <h1 class="post_title">Random Number Generators</h1>
-        <p class="date">Last edited: 2023-02-10</p>
+        <p class="date">Last edited: 2023-06-21</p>
         <p>Randomness in games is an important part of making every playthrough different and keeping the player on their toes. But where does it come from? Let's take a look at some algorithms and methods games employ to create randomness.</p>
         <p>I will say up-front that I am in no way an expert on randomness, I have just stumbled upon the subject many times while researching games for speedrun and TAS purposes. With that out of the way, let's get to it!</p>
         <h3>PRNG</h3>
@@ -28,7 +28,36 @@
         <h3>Randograms</h3>
         <p>The images below are made by generating pairs of random numbers from the PRNG in question, and using them as coordinates into a black image. The brightness is then increased at the selected coordinate. The images aren't really indicative of randomness quality, but we can still look at them and see if they look about right or if they have clear (non-random looking) patterns.</p>
         <hr>
+<!-- -->
+        <button type="button" class="collapsible deterministic">Amccus: PRNG (unknown type)</button>
+        <div class="content">
+        <p>This one does some fancy rotates and adds, making good use of the carry flag. Decent results for 24 bits of state.</p>
+        <pre style="min-height:256px;"><img src="img/prng/harvestmoon.png" alt="" class="prng">array [u8, 3] state = [0, 0, 0]
 
+u8 Get_prng_value()
+{
+    <span>//LFSR-style shift</span>
+    bool feedback = (state[0] ^ state[1]) & 2
+    state >>= 1                <span>//shift entire array right by 1 bit</span>
+    state[0] |= feedback << 7  <span>//feedback from taps</span>
+
+    u16 temp = state[0] + 0x47 <span>//u16 to get the carry value in bit 8</span>
+
+    <span>//rotate right with carry</span>
+    bool rot_carry = temp & 2
+    temp = (temp >> 2) | (temp << 7)
+
+    state[1] = (temp ^ state[1]) + state[2] + rot_carry
+    return state[1]
+}
+
+<span>Period: 5668926<br>PractRand tests passed: 48</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Harvest Moon (1996-08-09)<p style="font-style:italic;">Called every frame and on demand.</p></li>
+        </ul>
+        </div>
+<!-- -->
         <button type="button" class="collapsible hybrid">Capcom: Using the frame counter</button>
         <div class="content">
         <p>This method has four state variables that are increased at their own rate every frame. When requesting a value, it cycles to the next state variable and adds a constant to it.</p>
@@ -80,7 +109,7 @@ void ADC(u8 &dst, u8 src)  <span>//emulating the add-with-carry cpu instruction<
         <li>Breath of Fire (1993-04-03)</li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible hybrid">Capcom: Cascading adds</button>
         <div class="content">
         <p>This one shares some similarity with their earlier arcade PRNG (and to Quintet's PRNG). A LFSR-style shift is performed on the first element, followed by a series of adds throughout the state (while adding in a unique constant per element).</p>
@@ -125,7 +154,7 @@ u16 get_rng(u8 slot, u16 constant)
         <li>Dungeons & Dragons: Tower of Doom (1994-01-13)</li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Capcom: An early LCG</button>
         <div class="content">
         <p>Many early Capcom games on the snes started out with a LCG random number generator with m=2<sup>16</sup>, c=0. This setup (c=0) is also known as a Lehmer RNG.<br>Nothing fancy, but it gets the job done. Note the uniform diagonal patterns in the generated image.</p>
@@ -145,7 +174,7 @@ u8 Get_prng_value()
         <li>Aladdin (1993-11-21)<p style="font-style:italic;">Called on demand only.<br>Frequent prng usage early to "seed" the state.<br>Dying resets the state.</p></li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Capcom: Another LCG</button>
         <div class="content">
         <p>This time we have an LCG with m=2<sup>16</sup>, c=15329.</p>
@@ -163,7 +192,7 @@ u8 Get_prng_value()
         <li>Final Fight 2 (1993-05-22)<p style="font-style:italic;">Called on demand only.</p></li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Capcom: The broken PRNG!</button>
         <div class="content">
         <p>At some point, Capcom decided to switch up their PRNG algorithm, but something clearly went wrong here! The algorithm itself is fine - it's actually an improvement over their previous LCG. They just used the wrong half of the rng state as a return value!</p>
@@ -179,11 +208,12 @@ u8 Get_prng_value()
 <span>Period: 43534<br>PractRand tests passed: 17</span></pre>
         <p>Games known to use this PRNG:</p>
         <ul>
+        <li>Super Pang (1992-08-07)<p style="font-style:italic;">Called on demand only.</p></li>
         <li>Goof Troop (1993-07-11)<p style="font-style:italic;">Called on demand only.</p></li>
         <li>The Great Circus Mystery Starring Mickey & Minnie (1994-10-??)<p style="font-style:italic;">Called on demand only.</p></li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Capcom: The fixed PRNG</button>
         <div class="content">
         <p>Luckily Capcom realized something wasn't quite right and fixed the return value issue. The initial state was also updated. The generated image has much less apparent symmetry compared to the earlier LCG.</p>
@@ -206,7 +236,134 @@ u8 Get_prng_value()
         <li>Mega Man X3 (1995-12-01)<p style="font-style:italic;">Called every frame and on demand.</p></li>
         </ul>
         </div>
+<!-- -->
+        <button type="button" class="collapsible deterministic">Halken: LFSR with bounds</button>
+        <div class="content">
+        <p>At first I thought I had stumbled upon another intricate homebrew PRNG, but no! All that complicated-looking assembly code boiled down to a simple LFSR that gets updated several times per call. It allows for setting an upper bound of the returned value, at least!</p>
+        <p>Reducing the amount of LFSR shifts per call (from 11 to 9) makes this prng pass more PractRand tests, funnily enough.</p>
+        <pre style="min-height:256px;"><img src="img/prng/alcahest.png" alt="" class="prng">u16 state = 0x7777
 
+u8 Get_prng_value(u8 bound)
+{
+    for(x = 0; x < 11; x++)
+    {
+        bool feedback = (state ^ (state >> 1) ^ (state >> 15) ^ 1) & 1
+        state = (state << 1) | feedback
+    }
+
+    if bound == 0
+    {
+        return state as u8 <span>//return lower byte as-is (0 - 255)</span>
+    }
+    else
+    {
+        return (bound * (state & 0xFF)) >> 8 <span>//value is capped (0 - bound-1)</span>
+    }
+}
+
+<span>Period: 2<sup>16</sup>-2<br>PractRand tests passed: 10</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Alcahest (1993-12-17)<p style="font-style:italic;">Only called on demand.</p></li>
+        </ul>
+        </div>
+<!-- -->
+        <button type="button" class="collapsible">Human Entertainment, Capcom: LFSR with sub-par taps</button>
+        <div class="content">
+        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough. The period (the amount of updates until the initial state is reached again) is a measly 32767, which could be achieved with a quarter of the bits used and some better chosen taps. Case in point: Mega Man 5 uses the same exact method but with a 32-bit state instead of 64 - the period is identical!</p>
+        <pre style="min-height:256px;"><img src="img/prng/sos.png" alt="" class="prng">array[u8, 8] rng_state = (1, 0, 0, 0, 0, 0, 0, 0)
+
+void Update_rng() <span>//called many times every other frame</span>
+{
+    rng_state = rng_state >> 1 <span>//shift entire array right as if it was one 64-bit value</span>
+    rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
+}
+
+<span>Period: 2<sup>15</sup>-1<br>PractRand tests passed: 8</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: result = state[0] + state[1].<br><em class="nondeterministic">In some cases, the state gets updated with different methods on use (like adding one state byte to another, or even adding outside sources like the frame counter).</em></p></li>
+        <li>SOS (1993-05-28)<p style="font-style:italic;">From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
+        </ul>
+        </div>
+<!-- -->
+        <button type="button" class="collapsible nondeterministic">Kemco: Scanline counters</button>
+        <div class="content">
+        <p>When a random number is needed, the current drawing position is queried and added to the previous value.</p>
+        <pre style="min-height:256px;"><span>//ppu = picture processing unit</span>
+<span>//h_counter = 9-bit value, 0-339</span>
+<span>//v_counter = 9-bit value, 0-261 (sometimes 262)</span>
+
+u8 state = 0
+
+u8 rand()
+{
+    ppu.read_SLHV() <span>//update H/V counters to current drawing position</span>
+    u16 temp = state + (ppu.h_counter & 0xFF) <span>//temp bit 8 = carry</span>
+    state = temp
+
+    if ppu.v_counter < 256
+    {
+        state += temp >> 8 <span>//carry from previous add</span>
+        state += ppu.v_counter
+    }
+
+    return state
+}</pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Dragon View (1994-08-26)<p style="font-style:italic;">Only called on demand.</p></li>
+        </ul>
+        </div>
+<!-- -->
+        <button type="button" class="collapsible nondeterministic">Konami: Frame counter summing</button>
+        <div class="content">
+        <p>When all work is done in a frame, the frame counter gets added continously to the rng state for the rest of the frame. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
+        <pre style="min-height:256px;">u8 frame_counter = 0
+u8 state = 0
+
+void run_game_frame()
+{
+    frame_counter += 1
+
+    <span>//game code here...</span>
+
+    <span>//...done running game code for this frame.</span>
+
+    while NMI == false <span>//repeat until a new frame starts</span>
+    {
+        state += frame_counter
+    }
+}</pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Castlevania II: Simon's Quest (1987-08-28)</li>
+        </ul>
+        </div>
+<!-- -->
+        <button type="button" class="collapsible deterministic">Natsume: PRNG (unknown type)</button>
+        <div class="content">
+        <p>Not sure what this is based on (if anything), but it appears to not have a very long period. It generates 28110 unique values, after which it falls into a stable and short repeating pattern (a period of 9281!). Even then, it looks rather decent considering the short period!</p>
+        <pre style="min-height:256px;"><img src="img/prng/markdavis.png" alt="" class="prng">array [u16, 2] rng_state = [0, 0]
+
+void Update_rng()
+{
+    u32 temp = rng_state[0] << 1
+    temp = (temp + rng_state[1] + (temp >> 16)) & 0xFFFF
+    temp <<= 1
+    temp = (temp & 0xFFFF) + rng_state[0] + (temp >> 16)
+    rng_state[0] = temp + 0x3211 + (temp >> 16)
+    rng_state[1] ^= rng_state[0]
+}
+
+<span>Period: 9281<br>PractRand tests passed: 24</span></pre>
+        <p>Games known to use this PRNG:</p>
+        <ul>
+        <li>Pocky & Rocky (1992-12-22)</li>
+        <li>Mark Davis' The Fishing Master (1995-06-30)<p style="font-style:italic;">Called every frame (except loading frames) and on demand.<br>The game appears to mainly (only?) use state[1] for rng: the most significant bit for coinflips, and the least significant bits for most other things.</p></li>
+        </ul>
+        </div>
+<!-- -->
         <button type="button" class="collapsible deterministic">Quintet: A state-of-the-art PRNG</button>
         <div class="content">
         <p>Quintet employed a quite sophisticated PRNG for the time - the ACORN prng (or bearing a strong resemblance to it anyway). While requiring a bigger state and more execution time to update, the difference certainly shows up on the generated image. Note the black diagonal line: this is due to the zero state prevention that always runs when the PRNG is called.</p>
@@ -243,49 +400,7 @@ u8 Get_prng_value()
         <li>Robotrek (1994-07-08)<p style="font-style:italic;">Called on demand only.<br>First town frequently calls the prng.<br><em class="nondeterministic">Screen transitions writes the frame counter to state[2-3].</em></p></li>
         </ul>
         </div>
-
-        <button type="button" class="collapsible">Human Entertainment, Capcom: LFSR with sub-par taps</button>
-        <div class="content">
-        <p>This appears to be a (Fibonacci) Linear-Feedback Shift Register, or LFSR for short. The taps are bits 57 and 49; bit 0 is not a tap, oddly enough. The period (the amount of updates until the initial state is reached again) is a measly 32767, which could be achieved with a quarter of the bits used and some better chosen taps. Case in point: Mega Man 5 uses the same exact method but with a 32-bit state instead of 64 - the period is identical!</p>
-        <pre style="min-height:256px;"><img src="img/prng/sos.png" alt="" class="prng">array[u8, 8] rng_state = (1, 0, 0, 0, 0, 0, 0, 0)
-
-void Update_rng() <span>//called many times every other frame</span>
-{
-    rng_state = rng_state >> 1 <span>//shift entire array right as if it was one 64-bit value</span>
-    rng_state[0] |= (rng_state[0] ^ rng_state[1]) << 7 <span>//feedback from taps</span>
-}
-
-<span>Period: 2<sup>15</sup>-1<br>PractRand tests passed: 8</span></pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Mega Man 5 (1992-12-04)<p style="font-style:italic;">4-byte state (32 bits): [0x88, 0, 0, 0] is the initial state, the taps are bits 25 and 17.<br>Typically combines different parts of the state on use (for example: result = state[0] + state[1].<br><em class="nondeterministic">In some cases, the state gets updated with different methods on use (like adding one state byte to another, or even adding outside sources like the frame counter).</em></p></li>
-        <li>SOS (1993-05-28)<p style="font-style:italic;">From what I've seen, the game appears to mainly read bytes 0-3, sometimes 4-5 and never 6-7.</p></li>
-        </ul>
-        </div>
-
-        <button type="button" class="collapsible deterministic">Natsume: PRNG (unknown type)</button>
-        <div class="content">
-        <p>Not sure what this is based on (if anything), but it appears to not have a very long period. It generates 28110 unique values, after which it falls into a stable and short repeating pattern (a period of 9281!). Even then, it looks rather decent considering the short period!</p>
-        <pre style="min-height:256px;"><img src="img/prng/markdavis.png" alt="" class="prng">array [u16, 2] rng_state = [0, 0]
-
-void Update_rng()
-{
-    u32 temp = rng_state[0] << 1
-    temp = (temp + rng_state[1] + (temp >> 16)) & 0xFFFF
-    temp <<= 1
-    temp = (temp & 0xFFFF) + rng_state[0] + (temp >> 16)
-    rng_state[0] = temp + 0x3211 + (temp >> 16)
-    rng_state[1] ^= rng_state[0]
-}
-
-<span>Period: 9281<br>PractRand tests passed: 24</span></pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Pocky & Rocky (1992-12-22)</li>
-        <li>Mark Davis' The Fishing Master (1995-06-30)<p style="font-style:italic;">Called every frame (except loading frames) and on demand.<br>The game appears to mainly (only?) use state[1] for rng: the most significant bit for coinflips, and the least significant bits for most other things.</p></li>
-        </ul>
-        </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Taito: Randomness with an upper limit (and pre-generated values)</button>
         <div class="content">
         <p>This generator has a big pre-generated table of values - four runs of 0-255 scrambled together. Rather than just returning a value from the table, it gets multiplied with a value the calling code supplies. This value acts as an upper limit: for example, <i>Get_rng_value(0x67)</i> would return a value in the range 0x00-0x66. While certainly convenient, the quality isn't great.</p>
@@ -372,7 +487,7 @@ u8 Get_rng_value(u8 multiplicand)
         <li>Syvalion - SNES (1992-07-24)<p style="font-style:italic;">Updates the offset every frame in the menu.</p></li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Williams / Beam Software: Smash TV PRNG</button>
         <div class="content">
         <p>Perhaps not the best PRNG, but it sure creates a funky image!</p>
@@ -396,7 +511,7 @@ u8 Get_prng_value()
         <li>Super Smash TV (1992-02-??)</li>
         </ul>
         </div>
-
+<!-- -->
         <button type="button" class="collapsible deterministic">Many devs: C's built-in randomness</button>
         <div class="content">
         <p>As consoles and the tools around them advanced, the need to write everything from scratch decreased. Most games around the PS1 / N64 era were likely written in C for example, which typically gave you access to some form of the <i>C standard library:</i> pre-written general purpose code so you didn't have to write it yourself. And yes, there's a rand() function in there!</p>
@@ -416,120 +531,7 @@ u16 Get_prng_value()
         <li>Magical Tetris Challenge, PS1 (1999-03-18)<p style="font-style:italic;">Called twice during the intro, which effectively sets the starting state to 6.</p></li>
         </ul>
         </div>
-
-        <button type="button" class="collapsible deterministic">Amccus: PRNG (unknown type)</button>
-        <div class="content">
-        <p>This one does some fancy rotates and adds, making good use of the carry flag. Decent results for 24 bits of state.</p>
-        <pre style="min-height:256px;"><img src="img/prng/harvestmoon.png" alt="" class="prng">array [u8, 3] state = [0, 0, 0]
-
-u8 Get_prng_value()
-{
-    <span>//LFSR-style shift</span>
-    bool feedback = (state[0] ^ state[1]) & 2
-    state >>= 1                <span>//shift entire array right by 1 bit</span>
-    state[0] |= feedback << 7  <span>//feedback from taps</span>
-
-    u16 temp = state[0] + 0x47 <span>//u16 to get the carry value in bit 8</span>
-
-    <span>//rotate right with carry</span>
-    bool rot_carry = temp & 2
-    temp = (temp >> 2) | (temp << 7)
-
-    state[1] = (temp ^ state[1]) + state[2] + rot_carry
-    return state[1]
-}
-
-<span>Period: 5668926<br>PractRand tests passed: 48</span></pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Harvest Moon (1996-08-09)<p style="font-style:italic;">Called every frame and on demand.</p></li>
-        </ul>
-        </div>
-
-        <button type="button" class="collapsible deterministic">Halken: LFSR with bounds</button>
-        <div class="content">
-        <p>At first I thought I had stumbled upon another intricate homebrew PRNG, but no! All that complicated-looking assembly code boiled down to a simple LFSR that gets updated several times per call. It allows for setting an upper bound of the returned value, at least!</p>
-        <p>Reducing the amount of LFSR shifts per call (from 11 to 9) makes this prng pass more PractRand tests, funnily enough.</p>
-        <pre style="min-height:256px;"><img src="img/prng/alcahest.png" alt="" class="prng">u16 state = 0x7777
-
-u8 Get_prng_value(u8 bound)
-{
-    for(x = 0; x < 11; x++)
-    {
-        bool feedback = (state ^ (state >> 1) ^ (state >> 15) ^ 1) & 1
-        state = (state << 1) | feedback
-    }
-
-    if bound == 0
-    {
-        return state as u8 <span>//return lower byte as-is (0 - 255)</span>
-    }
-    else
-    {
-        return (bound * (state & 0xFF)) >> 8 <span>//value is capped (0 - bound-1)</span>
-    }
-}
-
-<span>Period: 2<sup>16</sup>-2<br>PractRand tests passed: 10</span></pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Alcahest (1993-12-17)<p style="font-style:italic;">Only called on demand.</p></li>
-        </ul>
-        </div>
-
-        <button type="button" class="collapsible nondeterministic">Kemco: Scanline counters</button>
-        <div class="content">
-        <p>When a random number is needed, the current drawing position is queried and added to the previous value.</p>
-        <pre style="min-height:256px;"><span>//ppu = picture processing unit</span>
-<span>//h_counter = 9-bit value, 0-339</span>
-<span>//v_counter = 9-bit value, 0-261 (sometimes 262)</span>
-
-u8 state = 0
-
-u8 rand()
-{
-    ppu.read_SLHV() <span>//update H/V counters to current drawing position</span>
-    u16 temp = state + (ppu.h_counter & 0xFF) <span>//temp bit 8 = carry</span>
-    state = temp
-
-    if ppu.v_counter < 256
-    {
-        state += temp >> 8 <span>//carry from previous add</span>
-        state += ppu.v_counter
-    }
-
-    return state
-}</pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Dragon View (1994-08-26)<p style="font-style:italic;">Only called on demand.</p></li>
-        </ul>
-        </div>
-
-        <button type="button" class="collapsible nondeterministic">Konami: Frame counter summing</button>
-        <div class="content">
-        <p>When all work is done in a frame, the frame counter gets added continously to the rng state for the rest of the frame. This happens 0-2000 times per frame (roughly) on a NES, depending on the workload.</p>
-        <pre style="min-height:256px;">u8 frame_counter = 0
-u8 state = 0
-
-void run_game_frame()
-{
-    frame_counter += 1
-
-    <span>//game code here...</span>
-
-    <span>//...done running game code for this frame.</span>
-
-    while NMI == false <span>//repeat until a new frame starts</span>
-    {
-        state += frame_counter
-    }
-}</pre>
-        <p>Games known to use this PRNG:</p>
-        <ul>
-        <li>Castlevania II: Simon's Quest (1987-08-28)</li>
-        </ul>
-        </div>
+<!-- -->
     </div>
 </div>
 </body></html>
