@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - Shining Force 1 stat graph</title>
+<script src="chart.js"></script>
+<script src="sf.js" defer></script>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">Shining Force 1 stat graph</h1>
+        <p class="date">2023-09-03</p>
+        <p>Work in progress. Currently only generates target stats.</p>
+
+        <canvas id="myChart" style="max-width:700px"></canvas>
+        <button id="genplot">Add stats</button>
+        <select id="character"></select>
+        <select id="stat"></select>
+        <select id="promote"><option>Not Promoted</option></select>
+
+    </div>
+</div>
+</body></html>
