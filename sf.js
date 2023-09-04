@@ -211,7 +211,7 @@ function target_stats() {
     for (let y = 0; y < 3; y++) { points[y].push(stats[y]); }
   }
 
-  let graph_label = Base_stats[current_char].name + " " + Stat_names[current_stat];
+  let graph_label = Base_stats[current_char].name + " target " + Stat_names[current_stat];
   if (promotion > 0) {
     graph_label = graph_label + " (promoted LV" + promotion + ")";
   }
