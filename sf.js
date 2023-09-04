@@ -145,7 +145,20 @@ window.onload = function setup() {
         x: {min:1, max:20, grid: {color: '#333'}},
         y: {min:0, suggestedMax: 25, grid: {color: '#777'}},
       },
-      plugins: {legend: {labels: {filter: item => item.datasetIndex % 3 == 0}}}
+      plugins: {
+        legend: {labels: {filter: item => item.datasetIndex % 3 == 0}},
+        tooltip: {
+          filter: item => item.datasetIndex % 3 == 0,
+          callbacks: {
+            label: function(context) {
+              const base_label = context.dataset.label + ": " + context.formattedValue;
+              const datasets = context.chart.data.datasets;
+              const min_max = " | min-max: " + datasets[context.datasetIndex + 1].data[context.dataIndex] + "-" + datasets[context.datasetIndex + 2].data[context.dataIndex];
+              return base_label + min_max;
+            }
+          }
+        }
+      },
     },
   });
 
@@ -173,22 +186,29 @@ function target_stats() {
   const current_char = document.getElementById("character").selectedIndex;
   const current_stat = document.getElementById("stat").selectedIndex;
   let promotion = document.getElementById("promote").selectedIndex;
+
+  let idx = 0;
+  let is_promoted = 0;
+  let stats = [];
+  let points = [[], [], []];
+
   if (promotion > 0) {
     promotion = promotion + 9;
+    is_promoted = 1;
+    idx++;
+    for (let y = 0; y < 3; y++) {
+      stats.push(get_base_stat(current_char, current_stat, promotion));
+      points[y].push(stats[y]);
+    }
+  } else {
+    for (let y = 0; y < 3; y++) {
+      stats.push(get_base_stat(current_char, current_stat, promotion));
+    }
   }
 
-  let stats = [
-    get_base_stat(current_char, current_stat, promotion),
-    get_base_stat(current_char, current_stat, promotion),
-    get_base_stat(current_char, current_stat, promotion),
-  ];
-
-  let points = [[], [], []];
-  for (let x = 0; x < 20; x++) {
-    increase_stats(x+1, current_char, current_stat, promotion, stats);
-    points[0].push(stats[0]);
-    points[1].push(stats[1]);
-    points[2].push(stats[2]);
+  for (; idx < 20; idx++) {
+    increase_stats(idx+1, current_char, current_stat, promotion, stats, is_promoted);
+    for (let y = 0; y < 3; y++) { points[y].push(stats[y]); }
   }
 
   let graph_label = Base_stats[current_char].name + " " + Stat_names[current_stat];
@@ -224,18 +244,12 @@ function target_stats() {
   }
 });
 
-function increase_stats(level, current_char, current_stat, promotion, stats) {
-  let is_promoted = 0;
-  if (promotion > 0) {
-    is_promoted = 1;
-  }
-
+function increase_stats(level, current_char, current_stat, promotion, stats, is_promoted) {
   const base = get_base_stat(current_char, current_stat, promotion);
   const growth_target = calculate_growth_target(level, current_char, current_stat, is_promoted);
   const target = base + growth_target;
-  stats[0] = stats[0] + calculate_stat_gain(target, Method.target, stats[0]);
-  stats[1] = stats[1] + calculate_stat_gain(target, Method.min, stats[1]);
-  stats[2] = stats[2] + calculate_stat_gain(target, Method.max, stats[2]);
+  let methods = [Method.target, Method.min, Method.max];
+  for (let x = 0; x < 3; x++) { stats[x] = stats[x] + calculate_stat_gain(target, methods[x], stats[x]); }
 }
 
 function get_base_stat(current_char, current_stat, promotion) {
