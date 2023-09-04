@@ -1,22 +1,13 @@
-const stat_names = ["Strength", "Defense", "Agility", "Hp", "Mp", "Crit"];
-const chart_colors = [
-  {border: '#36A2EBFF', bg: '#36A2EB80'},
-  {border: '#FF6384FF', bg: '#FF638480'},
-  {border: '#4BC0C0FF', bg: '#4BC0C080'},
-  {border: '#FF9F40FF', bg: '#FF9F4080'},
-  {border: '#9966FFFF', bg: '#9966FF80'},
-  {border: '#FFCD56FF', bg: '#FFCD5680'},
-  {border: '#C9CBCFFF', bg: '#C9CBCF80'},
-];
-
-const curve = [
+const Stat_names = ["Strength", "Defense", "Agility", "Hp", "Mp", "Crit"];
+const Chart_colors = ['#36A2EB', '#FF6384', '#4BC0C0', '#FF9F40', '#9966FF', '#FFCD56', '#C9CBCF'];
+const Method = {real: 0, target: 1, min: 2, max: 3};
+const Curve = [
     [0, 5, 10, 15, 21, 26, 31, 36, 42, 47, 52, 57, 63, 68, 73, 78, 84, 89, 94, 100], //linear 0
     [0, 16, 33, 50, 60, 70, 75, 80, 85, 90, 91, 92, 93, 95, 95, 96, 97, 98, 99, 100], //early 1
     [0, 2, 4, 6, 8, 11, 13, 15, 17, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100], //late 2
     [0, 10, 20, 30, 35, 40, 42, 45, 47, 50, 52, 55, 57, 60, 65, 70, 77, 85, 92, 100], //earlylate 3
 ];
-
-const base_stats = [
+const Base_stats = [
   {
     name: "Max", level: 1, base: [6, 4, 4, 12, 8, 3],
     gain: [[17, 16, 14, 23,  4,  4], [23, 48, 35, 46,  2,  8]],
@@ -138,7 +129,6 @@ const base_stats = [
 
 let chart;
 let color_idx = 0;
-let stat = 0;
 
 window.onload = function setup() {
   chart = new Chart("myChart", {
@@ -155,10 +145,11 @@ window.onload = function setup() {
         x: {min:1, max:20, grid: {color: '#333'}},
         y: {min:0, suggestedMax: 25, grid: {color: '#777'}},
       },
-    }
+      plugins: {legend: {labels: {filter: item => item.datasetIndex % 3 == 0}}}
+    },
   });
 
-  for (x of base_stats) {
+  for (x of Base_stats) {
     let option = document.createElement("option");
     option.text = x.name;
     document.getElementById("character").add(option);
@@ -170,7 +161,7 @@ window.onload = function setup() {
     document.getElementById("promote").add(option);
   }
 
-  for (x of stat_names) {
+  for (x of Stat_names) {
     let option = document.createElement("option");
     option.text = x;
     document.getElementById("stat").add(option);
@@ -186,30 +177,54 @@ function target_stats() {
     promotion = promotion + 9;
   }
 
-  stat = get_base_stat(current_char, current_stat, promotion);
-  let points = [];
+  let stats = [
+    get_base_stat(current_char, current_stat, promotion),
+    get_base_stat(current_char, current_stat, promotion),
+    get_base_stat(current_char, current_stat, promotion),
+  ];
+
+  let points = [[], [], []];
   for (let x = 0; x < 20; x++) {
-    increase_stats(x+1, current_char, current_stat, promotion);
-    points.push(stat);
+    increase_stats(x+1, current_char, current_stat, promotion, stats);
+    points[0].push(stats[0]);
+    points[1].push(stats[1]);
+    points[2].push(stats[2]);
   }
 
-  let graph_label = base_stats[current_char].name + " " + stat_names[current_stat];
+  let graph_label = Base_stats[current_char].name + " " + Stat_names[current_stat];
   if (promotion > 0) {
     graph_label = graph_label + " (promoted LV" + promotion + ")";
   }
 
   chart.data.datasets.push({
     label: graph_label,
-    data: points, borderColor: chart_colors[color_idx].border, backgroundColor: chart_colors[color_idx].bg
+    data: points[0], borderColor: Chart_colors[color_idx] + 'FF', backgroundColor: Chart_colors[color_idx] + '80',
   });
+
+  chart.data.datasets.push({ //min shading
+    showLine: false,
+    pointStyle: false,
+    fill: '-1',
+    label: graph_label + " Min",
+    data: points[1], backgroundColor: Chart_colors[color_idx] + '15',
+  });
+
+  chart.data.datasets.push({ //max shading
+    showLine: false,
+    pointStyle: false,
+    fill: '-2',
+    label: graph_label + " Max",
+    data: points[2], backgroundColor: Chart_colors[color_idx] + '15',
+  });
+
   chart.update();
   color_idx++;
-  if (color_idx == chart_colors.length) {
+  if (color_idx == Chart_colors.length) {
     color_idx = 0;
   }
 });
 
-function increase_stats(level, current_char, current_stat, promotion) {
+function increase_stats(level, current_char, current_stat, promotion, stats) {
   let is_promoted = 0;
   if (promotion > 0) {
     is_promoted = 1;
@@ -218,12 +233,13 @@ function increase_stats(level, current_char, current_stat, promotion) {
   const base = get_base_stat(current_char, current_stat, promotion);
   const growth_target = calculate_growth_target(level, current_char, current_stat, is_promoted);
   const target = base + growth_target;
-  const gain = calculate_stat_gain(target);
-  stat = stat + gain;
+  stats[0] = stats[0] + calculate_stat_gain(target, Method.target, stats[0]);
+  stats[1] = stats[1] + calculate_stat_gain(target, Method.min, stats[1]);
+  stats[2] = stats[2] + calculate_stat_gain(target, Method.max, stats[2]);
 }
 
 function get_base_stat(current_char, current_stat, promotion) {
-  const stat_value = base_stats[current_char].base[current_stat];
+  const stat_value = Base_stats[current_char].base[current_stat];
   if (promotion == 0) {
     return stat_value;
   } else {
@@ -233,11 +249,25 @@ function get_base_stat(current_char, current_stat, promotion) {
 }
 
 function calculate_growth_target(level, current_char, current_stat, is_promoted) {
-  const growth_percent = curve[base_stats[current_char].curve[is_promoted][current_stat]][level - 1]; //calculate_growth_percent(level);
-  return Math.floor((base_stats[current_char].gain[is_promoted][current_stat] * growth_percent) / 100)
+  const growth_percent = Curve[Base_stats[current_char].curve[is_promoted][current_stat]][level - 1];
+  return Math.floor((Base_stats[current_char].gain[is_promoted][current_stat] * growth_percent) / 100)
 }
 
-function calculate_stat_gain(target) {
-  const target2 = target;
+function calculate_stat_gain(target, method, stat) {
+  let target2 = 0;
+  let new_target = Math.min((target >>> 2), 5);
+
+  if (method == Method.real) {
+    // todo
+  } else if (method == Method.target) {
+    target2 = target;
+  } else if (method == Method.min) {
+    if (new_target > 0) {new_target--;}
+    target2 = target - new_target;
+  } else if (method == Method.max) {
+    if (new_target > 0) {new_target--;}
+    target2 = target + new_target;
+  }
+
   return Math.max(target2, stat) - stat;
 }
