@@ -219,7 +219,7 @@ function target_stats() {
   chart.data.datasets.push({
     label: graph_label,
     data: points[0], borderColor: Chart_colors[color_idx] + 'FF', backgroundColor: Chart_colors[color_idx] + '80',
-    segment: {borderDash: function(ctx) {if (ctx.p1.parsed.x < Base_stats[current_char].level) { return [7,3];}}}
+    segment: {borderDash: function(ctx) {if (!is_promoted && ctx.p1.parsed.x < Base_stats[current_char].level) { return [7,3];}}}
   });
 
   chart.data.datasets.push({ //min shading
