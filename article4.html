@@ -1,7 +1,22 @@
 <!DOCTYPE html><html><head>
 <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="style.css">
-<title>Fred's VG Tech articles - How random is... Death Condor (ActRaiser 2)</title>
+<style>
+    span.a{color:rgb(200,160,160)}
+    span.b{color:rgb(200,167,160)}
+    span.c{color:rgb(200,173,160)}
+    span.d{color:rgb(200,180,160)}
+    span.e{color:rgb(200,187,160)}
+    span.f{color:rgb(200,193,160)}
+    span.g{color:rgb(200,200,160)}
+    span.h{color:rgb(193,200,160)}
+    span.i{color:rgb(187,200,160)}
+    span.j{color:rgb(180,200,160)}
+    span.k{color:rgb(173,200,160)}
+    span.l{color:rgb(167,200,160)}
+    span.m{color:rgb(160,200,160)}
+    </style>
+<title>Fred's VG Tech articles - The high score comments of Elevator Action Returns</title>
 </head><body>
 <div class="grid-container">
     <div class="item1">
@@ -14,34 +29,103 @@
     </div>
 
     <div class="item3">
-        <h1 class="post_title">How random is... Death Condor? (ActRaiser 2)</h1>
-        <p class="date">2021-xx-xx</p>
-        <p>ActRaiser 2 is, as you might've guessed, the sequel to ActRaiser. Made on the request of Enix of America, the game thusly features no sim parts and only consists of action stages. It is an extremely difficult game and the controls feel rather clunky until you really get acquainted with them.</p>
-        <p>Few people have played this game and even fewer have tried their hand at speedrunning it, but one person has went above and beyond for this game - PJDicesare. PJ is running the game at an extremely high level; both precise execution and getting favorable random outcomes are hugely important.</p>
-        <img src="img/article3/deathcondor.png" alt="" class="center" style="width:585; height:448;">
-        <p>An early case of significant randomness appears in the shape of the <i>Death Condor</i> in Modero, the third stage of the speedrun. The miniboss hovers in the air and will either shoot fireballs or dive towards the player. The desired outcome is a dive; if it doesn't dive, we just have to wait out the fireballs until it dives.</p>
-        <p>PJ would frequently reset the game if the boss didn't dive, as it would cost too much time. At that time I was starting to learn how to inspect the inner workings of games and decided to see if I couldn't figure out just how random this boss truly is!</p>
-        <h3>Looking at the code</h3>
-        <p>The code to select action is rather straightforward, as can be seen below:</p>
-        <pre>Select_action()
-    Update_RNG()
-
-    if(rng_state[0] & 1) //if RNG value is odd
-    {
-        Dive()
-    }
-    else                 //if RNG value is even
-    {
-        Shoot()
-    }
-return
-
-<span class="pseudo">Pseudocode representation of the original assembly code</span></pre>
-        <p>The game simply updates the RNG and checks if the updated value is even or odd to pick an action. The RNG is functionally identical to the one used in ActRaiser 1 (an Add-with-carry algorithm) with some slight adjustments to the code, so I won't go over it here again. See my previous <a href="article1.html#PRNGs">article</a> if you wish to see the code.</p>
-        <p>There was one important change made from ActRaiser 1 however: <i>there's no outside influence on the RNG state!</i> Screen transitions would alter the RNG state in a way that was impossible to control but this was removed for the sequel; it can now only be updated by calling the Update_RNG function when needed. This gives us much better chances for manipulating the RNG.</p>
-        <p>Having figured out the RNG, it was time to see if we could now track it up until Death Condor!</p>
-        <h3>TODO</h3>
-        <p>Feeling enthusiastic, I hopped on PJ's stream and reported my findings so far. He says "Great! Can we track the RNG up until the Modero boss?"<br>I quickly fired up the emulator, ready to watch for any changes in the RNG state and...</p>
+        <h1 class="post_title">The high score comments of Elevator Action Returns</h1>
+        <p class="date">2023-11-21</p>
+        <p><i>The masterpiece that created a sensation around the world travels through time to return for vengeance!</i><br>Yes... I'm of course talking about Elevator Action... Returns!</p>
+        <img src="img/article4/redsuit.png" alt="" class="center" style="width:960; height:720;">
+        <p class="img_note">"Crush the old order and create a new society!"</p>
+        <p>If you rack up enough points in your bouts with the mysterious <em style="color:rgb(245, 140, 140)">Red Suit</em>, you get to enter your initials on the high score board.<br>You'll even get a comment to go along with your score as well! Can you get the elusive "COOL!" or "EXCELLENT!"?</p>
+        <img src="img/article4/elvactr_score.png" alt="" class="center" style="width:960; height:720;">
+        <p class="img_note">"Yes... yes! That's the way!"</p>
+        <h3>Determining the comments</h3>
+        <p>Alright, let's start from the beginning! If no credits were used or your score is below 50000, you get "NO COMMENTS.". This is of course not attainable in normal play as you need to use at least 1 credit, and the lowest default score on the board is 50000. This is the comment that the default scores have.</p>
+        <p>Next, if you used 8 credits or more you simply get "THANKS A LOT.". Thanks a lot for financing Taito!</p>
+        <p>The game then checks if all digits (except for the lowest two digits) of your score are identical, 55500 and 111105 for example. If this is the case, you'll get "BINGO!".</p>
+        <p>At this point, the game checks if your name is "AAA". If it is, you get "WHO IS IT?". By the way, the game will censor "SEX" and "KKK" to "AAA", so that'll get you the same comment.</p>
+        <p>From here on out the comments are based on a combination of your score and credits used, as seen in the table below. And that's it!</p>
+        <br>
+        <table>
+            <tr>
+                <th></th>
+                <th>50000-75000</th>
+                <th>75001-100000</th>
+                <th>100001-200000</th>
+                <th>200001-400000</th>
+                <th>400001-600000</th>
+                <th>600001-800000</th>
+                <th>800001-max</th>
+            </tr>
+            <tr>
+                <th scope="row">1C</th>
+                <td><span class="g">SEE YOU AGAIN.</span></td>
+                <td><span class="h">NICE.</span></td>
+                <td><span class="i">WELL,WELL.</span></td>
+                <td><span class="j">OH,YEAH!</span></td>
+                <td><span class="k">SHARP!</span></td>
+                <td><span class="l">COOL!</span></td>
+                <td><span class="m">EXCELLENT!</span></td>
+            </tr>
+            <tr>
+                <th scope="row">2C</th>
+                <td><span class="f">NOT BAD.</span></td>
+                <td><span class="g">ONE MORE TRY.</span></td>
+                <td><span class="h">FINE.</span></td>
+                <td><span class="i">WELL,WELL.</span></td>
+                <td><span class="j">WELL DONE.</span></td>
+                <td><span class="k">WONDERFUL!</span></td>
+                <td><span class="l">COOL!</span></td>
+            </tr>
+            <tr>
+                <th scope="row">3C</th>
+                <td><span class="e">SO SO.</span></td>
+                <td><span class="f">DUCK&JUMP!</span></td>
+                <td><span class="g">ONE MORE TRY.</span></td>
+                <td><span class="h">GOOD!</span></td>
+                <td><span class="i">GREAT WORK!</span></td>
+                <td><span class="j">WELL DONE.</span></td>
+                <td><span class="k">SHARP!</span></td>
+            </tr>
+            <tr>
+                <th scope="row">4C</th>
+                <td><span class="d">ARE YOU TIRED?</span></td>
+                <td><span class="e">DODGE THE SHOTS</span>.</td>
+                <td><span class="f">NOT BAD.</span></td>
+                <td><span class="g">NO PROBLEM.</span></td>
+                <td><span class="h">GOOD!</span></td>
+                <td><span class="i">WELL,WELL.</span></td>
+                <td><span class="j">OH,YEAH!</span></td>
+            </tr>
+            <tr>
+                <th scope="row">5C</th>
+                <td><span class="c">WHAT'S UP?</span></td>
+                <td><span class="d">WATCH YOUR STEP.</span></td>
+                <td><span class="e">SO SO.</span></td>
+                <td><span class="f">NOT BAD.</span></td>
+                <td><span class="g">ONE MORE TRY.</span></td>
+                <td><span class="h">FINE.</span></td>
+                <td><span class="i">WELL,WELL.</span></td>
+            </tr>
+            <tr>
+                <th scope="row">6C</th>
+                <td><span class="b">I LOVE YOU.</span></td>
+                <td><span class="c">ARE YOU TIRED?</span></td>
+                <td><span class="d">WATCH YOUR STEP.</span></td>
+                <td><span class="e">DODGE THE SHOTS.</span></td>
+                <td><span class="f">DUCK&JUMP!</span></td>
+                <td><span class="g">ONE MORE TRY.</span></td>
+                <td><span class="h">GOOD LUCK!</span></td>
+            </tr>
+            <tr>
+                <th scope="row">7C</th>
+                <td><span class="a">HA HA HA</span></td>
+                <td><span class="b">I LOVE YOU.</span></td>
+                <td><span class="c">WHAT'S UP?</span></td>
+                <td><span class="d">ARE YOU TIRED?</span></td>
+                <td><span class="e">SO SO.</span></td>
+                <td><span class="f">NOT BAD.</span></td>
+                <td><span class="g">SEE YOU AGAIN.</span></td>
+            </tr>
+        </table>
     </div>
 </div>
 </body></html>
