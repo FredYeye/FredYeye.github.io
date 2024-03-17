@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<style>
+    span.a{color:rgb(179,12,0)}
+    span.b{color:rgb(193,178,0)}
+    span.c{color:rgb(46,206,0)}
+    span.d{color:rgb(0,219,139)}
+    span.e{color:rgb(0,119,233)}
+    span.f{color:rgb(129,65,248)}
+    span.g{color:rgb(255,5,205)}
+    span.a1{color:rgb(153,255,156)}
+    span.b1{color:rgb(192,239,128)}
+    span.c1{color:rgb(221,221,114)}
+    span.d1{color:rgb(243,203,114)}
+    span.e1{color:rgb(255,185,124)}
+    span.f1{color:rgb(255,170,140)}
+    span.g1{color:rgb(255,158,158)}
+</style>
+<title>Fred's VG Tech articles - Shining Force CD: stat gains</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">Shining Force CD: stat gains</h1>
+        <p class="date">2024-03-17</p>
+        <p>Shining Force 1 handled stat gains by using the character's level to interpolate between points in a stat curve and adding some randomness. This way, you'd never get too far ahead or behind the intended stat curve, while still making level ups feel different every time due to the randomness.</p>
+        <p>Stat gains in Shining Force CD work in a simpler manner: depending on which level a character reaches, there's a random chance to gain some stats. Relying on chance to hand out points might sound bad, but the end result is not so different from SF1, as we'll see.</p>
+        <p>SF:CD is based on the SF Gaiden games that came out for the Game Gear which, with it's simpler Z80 processor (compared to the M68000 in the Mega Drive), can't do hardware multiplication and division for example. The lower spec hardware could possibly explain why the stat gain system was simplified.</p>
+        <h3>Details</h3>
+        <p>A simpler system doesn't have to mean it's going to be primitive, though. Let's dig into the details!</p>
+        <p>Each stat gets assigned an overall <i>growth curve</i> out of seven available.<br>Growth curves consist of four <i>rates</i> (chance and stat amounts, details below), each rate covering a level span: 2-5, 6-10, 11-15 and 16-20. This means that a character's stats will experience different growth rates over the course of the game.</p>
+        <p>Let's visualize the average stat gains of these growth curves. The X axis represents the level reached and the Y axis the accumulated average stat gain.</p>
+        <img src="img/article5/graph.png" alt="" class="center" style="width:970; height:401;">
+        <p><span class="a">Low</span>, <span class="c">Low+</span><br>The least valuable curves. Both have a good chance of giving +1 until level 10, after which the chance drops significantly.</p>
+        <p><span class="e">Average</span>, <span class="f">Average+</span><br>These stay fairly consistent throughout the game. Handing out solid +1-2s at levels 2-10 then tapering off slightly but still going strong at 11-20. Average+ does especially well, ending up having the highest potential of all the available curves.</p>
+        <p><span class="g">Early</span><br>Starting off strong with many +3s, then sinking to +2 and later +1. Levels 16-20 have a very low chance for any stat gains.</p>
+        <p><span class="d">Late</span><br>+1-2 gains at levels 6-10 and +2 (and a rare +3) at 11-20. Has similar potential as the early game curve but being backloaded instead.</p>
+        <p><span class="b">Mid</span><br>The midgame curve might give +1 early followed by +1-2 (especially +2) and ending at a very low chance for the final levels. Only outpaces the low and low+ curves.</p>
+        <h3>Rate and curve details</h3>
+        <p>These are the actual stat gains and the chances to get them for the seven rates, here labelled A (best) to G (worst). As you can see, even rate E has a good chance of giving a stat point!</p>
+        <pre>  | 0     | 1     | 2     | 3     |
+  |-------|-------|-------|-------|
+<span class="a1">A</span> |       |       |  5/32 | 27/32 |
+<span class="b1">B</span> |       |       | 15/16 |  1/16 |
+<span class="c1">C</span> |       |  7/12 |  5/12 |       |
+<span class="d1">D</span> |  5/58 | 42/48 |  1/48 |       |
+<span class="e1">E</span> |  1/ 6 |  5/ 6 |       |       |
+<span class="f1">F</span> |  7/12 |  5/12 |       |       |
+<span class="g1">G</span> | 17/20 |  3/20 |       |       |</pre>
+        <p>The curves are constructed using four rates, like so:</p>
+        <pre>Low      | <span class="e1">E</span> <span class="e1">E</span> <span class="f1">F</span> <span class="f1">F</span>
+Low+     | <span class="d1">D</span> <span class="d1">D</span> <span class="f1">F</span> <span class="f1">F</span>
+Average  | <span class="c1">C</span> <span class="c1">C</span> <span class="d1">D</span> <span class="d1">D</span>
+Average+ | <span class="b1">B</span> <span class="b1">B</span> <span class="c1">C</span> <span class="c1">C</span>
+Early    | <span class="a1">A</span> <span class="b1">B</span> <span class="d1">D</span> <span class="g1">G</span>
+Late     | <span class="f1">F</span> <span class="c1">C</span> <span class="b1">B</span> <span class="b1">B</span>
+Mid      | <span class="f1">F</span> <span class="b1">B</span> <span class="c1">C</span> <span class="g1">G</span></pre>
+        <h3>Level 20 and beyond</h3>
+        <p>After promotion, it's possible to keep leveling up until level 99. The growth mechanics here are different and I haven't had time to look into them yet.<br>I will likely come back and update this section at a later date.</p>
+        <h3>Ending</h3>
+        <p>Even though SF:CD's "random stat gains" sounds less reliable than SF1's "follow the stat curve" on the surface, it ends up doing a very similar job! The random stat gains aren't totally random after all, but rather weighted towards certain values, and the weights change every five levels.</p>
+        <p>A list of the stat curves for each character can be found <a href="sfcdstats.html">here</a>!</p>
+    </div>
+</div>
+</body></html>
