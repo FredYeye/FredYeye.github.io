@@ -116,11 +116,11 @@ table, th, td {
     color:rgb(200,200,200);
 }
 
-table {margin-left:auto; margin-right:auto;}
+table { margin: 30px auto; }
 
 th,td { padding:7px; text-align:left; }
 
-td {width:150px;}
+td { width:150px; }
 
 img.center { margin:60px auto; display:block; }
 
