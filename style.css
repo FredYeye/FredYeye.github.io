@@ -120,7 +120,10 @@ table { margin: 30px auto; }
 
 th,td { padding:7px; text-align:left; }
 
-td { width:150px; }
+th {
+    font-weight: normal;
+    background-color: rgb(38,38,38);
+}
 
 img.center { margin:60px auto; display:block; }
 
