@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Fred's VG Tech articles - Ninja Spirit: Traversing the floating ninjas</title>
+    </head><body>
+    <div class="grid-container">
+        <div class="item1">
+            <h1>Fred's game tech articles</h1>
+            <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+        </div>
+    
+        <div class="item2">
+            <p><a href="index.html">Home</a></p>
+        </div>
+    
+        <div class="item3">
+            <h1 class="post_title">Ninja Spirit: Traversing the floating ninjas</h1>
+            <p class="date">2025-06-10</p>
+            <p>I recently got to play through the PC Engine port of Ninja Spirit. It's a fun game!</p>
+            <img src="img/article7/1.png" alt="" class="center" style="width:585; height:478;">
+            <p class="img_note">Things quickly get out of hand. Did I mention that you can jump really high and shoot a lot?</p>
+            <p>Towards the end of the game you drop off a ledge and have to zig-zag through a swarm of floating ninjas. The gameplay of this part is maybe not so fun - you have to memorize a path down through trial and error. It looks quite neat though! In fact, it looked interesting enough that I decided to figure out how they made it work.</p>
+            <img src="img/article7/2.png" alt="" class="center" style="width:585; height:478;">
+            <p class="img_note">Not again...!</p>
+            <h3>Looking closer</h3>
+            <p>After falling down a few times it quickly becomes clear that the ninjas' positions are fixed. Maybe they're generating the positions procedurally, using a counter or some random number generator dedicated to this section?</p>
+            <p>A deeper inspection revealed it was nothing of the sort: there's just a list of ninjas stored on the cartridge, a grand total 151 of them! The ninja list is checked as you fall and spawns in ninjas as you approach them. It gets the job done, I suppose.</p>
+            <pre>Ninja data struct:
+{
+    u16 position_y,
+    u16 unused,
+    u16 function_ptr,    <span>// code to run for this object next frame</span>
+    u16 position_x_flags, <span>// x position + flags for sprite flip, front/back facing sprite, speed</span>
+    u8  bank_select,
+}</pre>
+            <h3>Closing</h3>
+            <p>Since there's no fancy code to analyze this will be a fairly short post. We have <i>images</i>, at least!<br>I cobbled together a small program that spits out an image with all ninja locations, that's the left image below. There's also a second image that adds their hitboxes which are 32x8 in size. The position of the hitboxes are a bit of an approximation, though. Overlayed is a 1D heatmap: brighter stripes indicate ninja-dense areas while darker colors mean less crammed areas.</p>
+            <p>The left and right sides can clearly be seen to be the most devoid of ninjas, so it would be wise to tailor your fall around this two lines!</p>
+            <img src="img/article7/3.png" alt="" class="center" width="565" style="width:565;float:left;">
+            <img src="img/article7/4.png" alt="" class="center" width="565" style="width:565;float:right;">
+        </div>
+    </div>
+    </body></html>
