@@ -77,6 +77,8 @@ pre {
 
 pre > span { color:rgb(160,160,160); }
 
+code { background-color:rgb(38,38,38); }
+
 span.explanation {
     text-decoration-line:underline;
     text-decoration-style:dotted;

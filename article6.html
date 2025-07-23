@@ -1,35 +1,35 @@
 <!DOCTYPE html><html><head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Fred's VG Tech articles - The 7th Saga: exploiting the RNG for stats</title>
-    </head><body>
-    <div class="grid-container">
-        <div class="item1">
-            <h1>Fred's game tech articles</h1>
-            <h2>Reverse engineering, retro game archeology and speedrun research</h2>
-        </div>
-    
-        <div class="item2">
-            <p><a href="index.html">Home</a></p>
-        </div>
-    
-        <div class="item3">
-            <h1 class="post_title">The 7th Saga: exploiting the RNG for stats</h1>
-            <p class="date">2025-03-22</p>
-            <p><i>Note: I wasn't the one who discovered this. <a href="https://www.thesupersnes.tv/casual/7thsaga/7th-saga-seed-manipulation/">Kirkq and Nitrodon</a> gets the credit for that.</i></p>
-            <p>Today we're going to try figuring out just where in a PRNG sequence we might be at so we can predict upcoming RNG rolls. More specifically we'll be analyzing the <span class="explanation" title="multiplicative congruential generator">MCG</span>, also known as the Lehmer RNG, as it's being used in The 7th Saga.</p>
-            <img src="img/article6/1.png" alt="" class="center" style="width:585; height:448;">
-            <h3>The motive</h3>
-            <p>Every once in a while you'll find various seeds that increase your stats permanently. While this is great, the big hitch here is that the stat increase is a random value between 1-4! You need all the stats you can get when speedrunning this game (or even just playing casually!), so getting those +4 increases is vital.<br>If we knew the upcoming RNG values we could predict when a seed will give a +4.</p>
-            <p>Before we get into the method, let's quickly go over some important facts about the MCG, which is responsible for handing out random numbers whenever they're needed.</p>
-            <h3>MCG 101</h3>
-            <p>The way the MCG works is simple: whenever a new value is requested, first multiply the rng state variable with some constant and then return the state:</p>
-            <pre>rng_state = rng_state * multiplier;</pre>
-            <p>When the <i>modulus</i> of an MCG is a power of two, the <span class="explanation" title="Number of updates / rolls until the sequence repeats">period</span> will be at most a quarter of the modulus. In the case of The 7th Saga, the rng state variable is 16 bits. Any result bigger than that gets clipped off, so the modulus is 2<sup>16</sup> = 65536 which gives us a maximum period of 65536 / 4 = 16384.</p>
-            <p>At this point, you are probably not wondering... which of these 65536 values are we not reaching? Well, let me tell you anyway!</p>
-            <p>To achieve this maximum period of modulus / 4, the state and multiplier must be odd. This rules out all even numbers, which cuts away 2/4 of the possible values. Additionally, only half of all the odd values are reachable from any given starting state. This removes another 1/4 from the total values. Thus we're left with 1/4 of the 65536 potential values, that is 16384.</p>
-            <p>One last important fact: similar to the <span class="explanation" title="Linear congruential generator">LCG</span>, the higher the bit, the longer the period for that bit before it starts repeating its sequence:</p>
-            <pre>Bit # | Period
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Fred's VG Tech articles - The 7th Saga: exploiting the RNG for stats</title>
+</head><body>
+<div class="grid-container">
+    <div class="item1">
+        <h1>Fred's game tech articles</h1>
+        <h2>Reverse engineering, retro game archeology and speedrun research</h2>
+    </div>
+
+    <div class="item2">
+        <p><a href="index.html">Home</a></p>
+    </div>
+
+    <div class="item3">
+        <h1 class="post_title">The 7th Saga: exploiting the RNG for stats</h1>
+        <p class="date">2025-03-22</p>
+        <p><i>Note: I wasn't the one who discovered this. <a href="https://www.thesupersnes.tv/casual/7thsaga/7th-saga-seed-manipulation/">Kirkq and Nitrodon</a> gets the credit for that.</i></p>
+        <p>Today we're going to try figuring out just where in a PRNG sequence we might be at so we can predict upcoming RNG rolls. More specifically we'll be analyzing the <span class="explanation" title="multiplicative congruential generator">MCG</span>, also known as the Lehmer RNG, as it's being used in The 7th Saga.</p>
+        <img src="img/article6/1.png" alt="" class="center" style="width:585; height:448;">
+        <h3>The motive</h3>
+        <p>Every once in a while you'll find various seeds that increase your stats permanently. While this is great, the big hitch here is that the stat increase is a random value between 1-4! You need all the stats you can get when speedrunning this game (or even just playing casually!), so getting those +4 increases is vital.<br>If we knew the upcoming RNG values we could predict when a seed will give a +4.</p>
+        <p>Before we get into the method, let's quickly go over some important facts about the MCG, which is responsible for handing out random numbers whenever they're needed.</p>
+        <h3>MCG 101</h3>
+        <p>The way the MCG works is simple: whenever a new value is requested, first multiply the rng state variable with some constant and then return the state:</p>
+        <pre>rng_state = rng_state * multiplier;</pre>
+        <p>When the <i>modulus</i> of an MCG is a power of two, the <span class="explanation" title="Number of updates / rolls until the sequence repeats">period</span> will be at most a quarter of the modulus. In the case of The 7th Saga, the rng state variable is 16 bits. Any result bigger than that gets clipped off, so the modulus is 2<sup>16</sup> = 65536 which gives us a maximum period of 65536 / 4 = 16384.</p>
+        <p>At this point, you are probably not wondering... which of these 65536 values are we not reaching? Well, let me tell you anyway!</p>
+        <p>To achieve this maximum period of modulus / 4, the state and multiplier must be odd. This rules out all even numbers, which cuts away 2/4 of the possible values. Additionally, only half of all the odd values are reachable from any given starting state. This removes another 1/4 from the total values. Thus we're left with 1/4 of the 65536 potential values, that is 16384.</p>
+        <p>One last important fact: similar to the <span class="explanation" title="Linear congruential generator">LCG</span>, the higher the bit, the longer the period for that bit before it starts repeating its sequence:</p>
+        <pre>Bit # | Period
     0 |      1 (always 1)
     1 |      2 (flips between 0 and 1)
     2 |      2 (flips between 0 and 1)
@@ -60,18 +60,18 @@
 1: Down
 2: Left
 3: Right</pre>
-            <p>This means that if we use a seed when an NPC is about to walk to the right, the next random number is a 3.<br>By observing the movements of an NPC, we can "see" bits 8-9 by the way it's moving. Believe it or not - this is actually enough information for us to use!</p>
-            <p>The highest bit being used determines the period as mentioned in the MCG section, so bits 8-9 will have a period of 256 - NPC movement and seed stats are both moving along the same repeating 256-step sequence.</p>
-            <p>To find out where we are in this sequence, we'll observe a lone NPC's movement and write down its walk directions. Once we've gathered a few directions, we'll convert them to a list of corresponding values (0-3) and see how many instances of this list exists within the 256-step sequence. If we get more matches than just one, we need to gather more directions to ascertain where we are.<br>Given enough directions we'll eventually get down to one match... huh...</p>
-            <p>No matches... what do you mean, <i>no matches</i>?!</p>
-            <h3>...But first, we need to talk about parallel streams</h3>
-            <p>So we generated a list of 256 values from the MCG and compared a direction list against it, and there's no match! How can that be? The NPC is simply following the RNG!</p>
-            <p>Recall back to the MCG 101 section. We're getting 1/4 values out of the possible 65536 values a 16 bit variable can hold. All even numbers are out of the question, which still rules out 2/4, but... what about that other 1/4, those other unreachable odd numbers...?</p>
-            <p>Indeed, The 7th Saga doesn't have a fixed starting state! It's at least in part based on some frame counter, so the RNG really could be starting on any value.<br>To avoid the state being even, the state is always made odd by adding 1 if it's even when requesting a value.</p>
-            <p>We didn't get a match earlier because we were only checking one set of reachable odd numbers, while the game was using the <i>other</i> set of odd numbers!</p>
-            <p>All we have to do is to generate two 256-step sequences based on both sets of reachable odd numbers. Then we once again compare a step list against these two until only one match is found... and <i>now</i> we've found out where in the RNG sequence we are! When the NPC's next step would be to the right (3), we cut in and use our stat seed.</p>
-            <img src="img/article6/3.png" alt="" class="center" style="width:585; height:448;">
-            <p class="img_note">Bam! +4 points to us!</p>
-        </div>
+        <p>This means that if we use a seed when an NPC is about to walk to the right, the next random number is a 3.<br>By observing the movements of an NPC, we can "see" bits 8-9 by the way it's moving. Believe it or not - this is actually enough information for us to use!</p>
+        <p>The highest bit being used determines the period as mentioned in the MCG section, so bits 8-9 will have a period of 256 - NPC movement and seed stats are both moving along the same repeating 256-step sequence.</p>
+        <p>To find out where we are in this sequence, we'll observe a lone NPC's movement and write down its walk directions. Once we've gathered a few directions, we'll convert them to a list of corresponding values (0-3) and see how many instances of this list exists within the 256-step sequence. If we get more matches than just one, we need to gather more directions to ascertain where we are.<br>Given enough directions we'll eventually get down to one match... huh...</p>
+        <p>No matches... what do you mean, <i>no matches</i>?!</p>
+        <h3>...But first, we need to talk about parallel streams</h3>
+        <p>So we generated a list of 256 values from the MCG and compared a direction list against it, and there's no match! How can that be? The NPC is simply following the RNG!</p>
+        <p>Recall back to the MCG 101 section. We're getting 1/4 values out of the possible 65536 values a 16 bit variable can hold. All even numbers are out of the question, which still rules out 2/4, but... what about that other 1/4, those other unreachable odd numbers...?</p>
+        <p>Indeed, The 7th Saga doesn't have a fixed starting state! It's at least in part based on some frame counter, so the RNG really could be starting on any value.<br>To avoid the state being even, the state is always made odd by adding 1 if it's even when requesting a value.</p>
+        <p>We didn't get a match earlier because we were only checking one set of reachable odd numbers, while the game was using the <i>other</i> set of odd numbers!</p>
+        <p>All we have to do is to generate two 256-step sequences based on both sets of reachable odd numbers. Then we once again compare a step list against these two until only one match is found... and <i>now</i> we've found out where in the RNG sequence we are! When the NPC's next step would be to the right (3), we cut in and use our stat seed.</p>
+        <img src="img/article6/3.png" alt="" class="center" style="width:585; height:448;">
+        <p class="img_note">Bam! +4 points to us!</p>
     </div>
-    </body></html>
+</div>
+</body></html>
