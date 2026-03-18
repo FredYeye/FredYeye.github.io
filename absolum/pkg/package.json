@@ -1,0 +1,15 @@
+{
+  "name": "absolum-calc",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "absolum_calc_bg.wasm",
+    "absolum_calc.js",
+    "absolum_calc.d.ts"
+  ],
+  "main": "absolum_calc.js",
+  "types": "absolum_calc.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

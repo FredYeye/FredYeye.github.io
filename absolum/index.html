@@ -1,0 +1,42 @@
+<!doctype html><html><head>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head><body>
+<h1>Wave Ritual levels:</h1>
+<input class="wave" id="dash" type="number" value=0 min=0 max=3><label for="dash">Wave Dash</label><br>
+<input class="wave" id="landing" type="number" value=0 min=0 max=3><label for="landing">Wave Landing</label><br>
+<input class="wave" id="arcana" type="number" value=0 min=0 max=3><label for="arcana">Wave Arcana</label><br>
+<input class="wave" id="clash" type="number" value=0 min=0 max=3><label for="clash">Wave Clash</label><br>
+<input class="wave" id="harsh" type="number" value=0 min=0 max=3><label for="harsh">Harsh Waves</label><br>
+<hr>
+<p id="result">Small wave:<br>Big wave:<br>Pushback:</p>
+
+<script type="module">
+import init, { Water } from "./pkg/absolum_calc.js";
+await init();
+
+let water_data = new Water;
+
+const elements = document.getElementsByClassName("wave");
+
+for (const element of elements) {
+  element.addEventListener("change", update_water);
+}
+
+function update_water() {
+  const idx = new Map([
+    ["dash", 0],
+    ["landing", 1],
+    ["arcana", 2],
+    ["clash", 3],
+    ["harsh", 4]
+  ]);
+
+  water_data.set_level_wave(idx.get(this.id), this.value);
+  
+  const small = water_data.wave_dmg(false);
+  const big = water_data.wave_dmg(true);
+  const knockback = water_data.wave_knockback().toFixed(1);
+  result.innerHTML = `Small wave: ${small}<br>Big wave: ${big}<br>Pushback: +${knockback}%`;
+}
+</script>
+</body></html>
