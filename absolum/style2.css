@@ -1,0 +1,33 @@
+@font-face {
+  font-family: FiraSans;
+  src: url(FiraSans-Medium.ttf);
+}
+
+body {
+    font-family: FiraSans, sans-serif;
+    background-color: rgb(22,22,22);
+}
+
+p {
+    font-size:16px;
+    color:rgb(200,200,200);
+}
+
+.buttons button{
+  margin: 5px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.item{ margin: 5px 0; }
+
+.hidden{ display: none; }
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border: 1px solid rgb(160 160 160);
+  padding: 8px 10px;
+}

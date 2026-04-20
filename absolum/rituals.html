@@ -1,0 +1,146 @@
+<!DOCTYPE html><html><head>
+<link rel="stylesheet" type="text/css" href="style2.css">
+<title>Absolum</title>
+</head>
+<body>
+<div class="buttons">
+<button onclick="filterTag('all')">All</button><br>
+<button style="background-color:#ffaa3b;" onclick="filterTag('fire')">Fire</button>
+<button style="background-color:#9ebbf0;" onclick="filterTag('water')">Water</button>
+<button style="background-color:#D3AB17;" onclick="filterTag('wind')">Wind</button>
+<button style="background-color:#fd9cf5;" onclick="filterTag('thunder')">Thunder</button><br>
+<button style="background-color:#af7f5f;" onclick="filterTag('bramble')">Bramble</button>
+<button style="background-color:#58c495;" onclick="filterTag('necromancy')">Necromancy</button>
+<button style="background-color:#D0E6F7;" onclick="filterTag('time')">Time</button>
+<button style="background-color:#ac88eb;" onclick="filterTag('chaos')">Chaos</button>
+</div>
+
+<table>
+  <tbody id="table_body"></tbody>
+</table>
+
+<script>
+
+const items = [
+  {
+    name: "Thorn Echo", img: "Duo_Bramble_Time", tags: ["bramble", "time"],
+    desc: "<b>Thorn daggers</b> leave a delayed <b>Past echo</b> of themselves."
+  }, {
+    name: "Detox Plant", img: "Duo_Eldritch_Bramble", tags: ["bramble", "chaos"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> cure <b>Cursed life</b>."
+  }, {
+    name: "Chaos Echo", img: "Duo_Eldritch_Time", tags: ["time", "chaos"],
+    desc: "Adds a <b>Chance</b> that any action will generate an immediately active <b>Past echo</b>."
+  }, {
+    name: "Zapping Plants", img: "Duo_Electric_Bramble", tags: ["bramble", "thunder"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> give <b>10%</b> <b>Static charges</b>."
+  }, {
+    name: "Cosmic Thunderstorm", img: "Duo_Electric_Eldritch", tags: ["chaos", "thunder"],
+    desc: "This new <b>Cosmic accident</b> can invoke a <b>Proximity spark</b> thunderstorm."
+  }, {
+    name: "Spectral Current", img: "Duo_Electric_Graveyard", tags: ["necromancy", "thunder"],
+    desc: "Triggers <b>Chain lightning</b> upon losing <b>Spectral armour</b>."
+  }, {
+    name: "Charging Station", img: "Duo_Electric_Time", tags: ["thunder", "time"],
+    desc: "Gain <b>Static charge</b> over time."
+  }, {
+    name: "Magnetised Waves", img: "Duo_Electric_Water", tags: ["thunder", "water"],
+    desc: "<b>Proximity spark</b> generates a <b>Tidal wave</b> on activation."
+  }, {
+    name: "Chain Tornadoes", img: "Duo_Electric_Wind", tags: ["thunder", "wind"],
+    desc: "<b>Chain lightning</b> spawns <b>Tornado</b> on hit."
+  }, {
+    name: "Burning Plants", img: "Duo_Fire_Bramble", tags: ["bramble", "fire"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> apply <b>Burn</b>."
+  }, {
+    name: "Hellish Portals", img: "Duo_Fire_Eldritch", tags: ["chaos", "fire"],
+    desc: "All <b>Cosmic accidents</b> create <b>Blazing trails</b>."
+  }, {
+    name: "Spark Combustion", img: "Duo_Fire_Electric", tags: ["thunder", "fire"],
+    desc: "<b>Proximity spark</b> and <b>Chain lightning</b> also apply <b>Burn</b>."
+  }, {
+    name: "Fiery Skeleton", img: "Duo_Fire_Graveyard", tags: ["necromancy", "fire"],
+    desc: "<b>Blazing trails</b> also slow down enemies' movement speed."
+  }, {
+    name: "Melting Heat", img: "Duo_Fire_Time", tags: ["fire", "time"],
+    desc: "<b>Blazing trails</b> also slow down enemies' movement speed."
+  }, {
+    name: "Sizzling Water", img: "Duo_Fire_Water", tags: ["water", "fire"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> leave a <b>Blazing trail</b> behind."
+  }, {
+    name: "Fiery Tornadoes", img: "Duo_Fire_Wind", tags: ["wind", "fire"],
+    desc: "<b>Tornadoes</b> spawn a stationary <b>Fiery ring</b>."
+  }, {
+    name: "Blooming Skull", img: "Duo_Graveyard_Bramble", tags: ["necromancy", "bramble"],
+    desc: "<b>Skeletons</b> spawn a <b>Rose turret</b> on death."
+  }, {
+    name: "Cosmic Pillar", img: "Duo_Graveyard_Eldritch", tags: ["chaos", "necromancy"],
+    desc: "New <b>Cosmic accident</b> spawns a pillar that automatically spawns <b>Skeletons</b>."
+  }, {
+    name: "Moment of Silence", img: "Duo_Graveyard_Time", tags: ["necromancy", "time"],
+    desc: "Apply <b>Chrono Lock</b> to nearby enemies upon losing <b>Spectral Armour</b>."
+  }, {
+    name: "Skeleton Dust", img: "Duo_Graveyard_Wind", tags: ["necromancy", "wind"],
+    desc: "<b>Skeletons</b> spawn with <b>X</b> <b>Sonic Boom(s)</b>."
+  }, {
+    name: "Tidal Plants", img: "Duo_Water_Bramble", tags: ["bramble", "water"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> create small <b>Tidal waves</b> on hit."
+  }, {
+    name: "Cursed Well", img: "Duo_Water_Eldritch", tags: ["water", "chaos"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> scale up with missing <b>Health</b> (<b>Cursed life</b> counts as missing <b>Health</b>)."
+  }, {
+    name: "Wet Armour", img: "Duo_Water_Graveyard", tags: ["necromancy", "water"],
+    desc: "Create <b>Tidal waves</b> upon losing <b>Spectral armour</b>."
+  }, {
+    name: "Water Pressure", img: "Duo_Water_Time", tags: ["water", "time"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> apply <b>Unstable</b> to enemies. <b>Unstable</b>: X% damage"
+  }, {
+    name: "Bubble Lift", img: "Duo_Water_Wind", tags: ["water", "wind"],
+    desc: "<b>Splash bubbles</b> greatly increases <b>Gale</b> on the enemy."
+  }, {
+    name: "Wind Spikes", img: "Duo_Wind_Bramble", tags: ["wind", "bramble"],
+    desc: "<b>Tornadoes</b> spawn <b>Rose darts</b>."
+  }, {
+    name: "Otherworldly Booms", img: "Duo_Wind_Eldritch", tags: ["wind", "chaos"],
+    desc: "<b>Sonic Booms</b> have a <b>Chance</b> of not depleting upon deployment."
+  }, {
+    name: "Sonic Echo", img: "Duo_Wind_Time", tags: ["wind", "time"],
+    desc: "<b>Sonic booms</b> also deploy a delayed <b>Past echo</b> of themselves."
+  }, 
+];
+
+function render(list) {
+  const tbody = document.getElementById("table_body");
+  tbody.innerHTML = "";
+
+  list.forEach(item => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td><img src="legacy/${item.img}.png" height="82"></td>
+      <td><p>${item.name}</p></td>
+      <td><p>${item.desc}</p></td>
+    `;
+
+    tbody.appendChild(row);
+  });
+}
+
+function filterTag(tag) {
+  let result;
+
+  if (tag === "all") {
+    result = [...items];
+  } else {
+    result = items
+      .filter(item => item.tags.includes(tag))
+      .sort((a, b) => a.tags.indexOf(tag) - b.tags.indexOf(tag));
+  }
+
+  render(result);
+}
+
+
+render(items);
+</script>
+</body></html>
