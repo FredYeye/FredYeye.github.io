@@ -3,8 +3,21 @@
 <title>Absolum</title>
 </head>
 <body>
+
 <div class="buttons">
-<button onclick="filterTag('all')">All</button><br>
+<p>Rituals</p>
+<button style="background-color:#ffaa3b;" onclick="filterTag2('fire')">Fire</button>
+<button style="background-color:#9ebbf0;" onclick="filterTag2('water')">Water</button>
+<button style="background-color:#D3AB17;" onclick="filterTag2('wind')">Wind</button>
+<button style="background-color:#fd9cf5;" onclick="filterTag2('thunder')">Thunder</button><br>
+<button style="background-color:#af7f5f;" onclick="filterTag2('bramble')">Bramble</button>
+<button style="background-color:#58c495;" onclick="filterTag2('necromancy')">Necromancy</button>
+<button style="background-color:#D0E6F7;" onclick="filterTag2('time')">Time</button>
+<button style="background-color:#ac88eb;" onclick="filterTag2('chaos')">Chaos</button>
+</div>
+
+<div class="buttons">
+<p>Twin Rituals</p>
 <button style="background-color:#ffaa3b;" onclick="filterTag('fire')">Fire</button>
 <button style="background-color:#9ebbf0;" onclick="filterTag('water')">Water</button>
 <button style="background-color:#D3AB17;" onclick="filterTag('wind')">Wind</button>
@@ -15,99 +28,24 @@
 <button style="background-color:#ac88eb;" onclick="filterTag('chaos')">Chaos</button>
 </div>
 
+<hr>
+
 <table>
   <tbody id="table_body"></tbody>
 </table>
 
 <script>
+function filterTag2(tag) {
+  render(rituals[tag]);
+}
 
-const items = [
-  {
-    name: "Thorn Echo", img: "Duo_Bramble_Time", tags: ["bramble", "time"],
-    desc: "<b>Thorn daggers</b> leave a delayed <b>Past echo</b> of themselves."
-  }, {
-    name: "Detox Plant", img: "Duo_Eldritch_Bramble", tags: ["bramble", "chaos"],
-    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> cure <b>Cursed life</b>."
-  }, {
-    name: "Chaos Echo", img: "Duo_Eldritch_Time", tags: ["time", "chaos"],
-    desc: "Adds a <b>Chance</b> that any action will generate an immediately active <b>Past echo</b>."
-  }, {
-    name: "Zapping Plants", img: "Duo_Electric_Bramble", tags: ["bramble", "thunder"],
-    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> give <b>10%</b> <b>Static charges</b>."
-  }, {
-    name: "Cosmic Thunderstorm", img: "Duo_Electric_Eldritch", tags: ["chaos", "thunder"],
-    desc: "This new <b>Cosmic accident</b> can invoke a <b>Proximity spark</b> thunderstorm."
-  }, {
-    name: "Spectral Current", img: "Duo_Electric_Graveyard", tags: ["necromancy", "thunder"],
-    desc: "Triggers <b>Chain lightning</b> upon losing <b>Spectral armour</b>."
-  }, {
-    name: "Charging Station", img: "Duo_Electric_Time", tags: ["thunder", "time"],
-    desc: "Gain <b>Static charge</b> over time."
-  }, {
-    name: "Magnetised Waves", img: "Duo_Electric_Water", tags: ["thunder", "water"],
-    desc: "<b>Proximity spark</b> generates a <b>Tidal wave</b> on activation."
-  }, {
-    name: "Chain Tornadoes", img: "Duo_Electric_Wind", tags: ["thunder", "wind"],
-    desc: "<b>Chain lightning</b> spawns <b>Tornado</b> on hit."
-  }, {
-    name: "Burning Plants", img: "Duo_Fire_Bramble", tags: ["bramble", "fire"],
-    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> apply <b>Burn</b>."
-  }, {
-    name: "Hellish Portals", img: "Duo_Fire_Eldritch", tags: ["chaos", "fire"],
-    desc: "All <b>Cosmic accidents</b> create <b>Blazing trails</b>."
-  }, {
-    name: "Spark Combustion", img: "Duo_Fire_Electric", tags: ["thunder", "fire"],
-    desc: "<b>Proximity spark</b> and <b>Chain lightning</b> also apply <b>Burn</b>."
-  }, {
-    name: "Fiery Skeleton", img: "Duo_Fire_Graveyard", tags: ["necromancy", "fire"],
-    desc: "<b>Skeletons</b> spawn with a <b>Fiery ring</b>."
-  }, {
-    name: "Melting Heat", img: "Duo_Fire_Time", tags: ["fire", "time"],
-    desc: "<b>Blazing trails</b> also slow down enemies' movement speed."
-  }, {
-    name: "Sizzling Water", img: "Duo_Fire_Water", tags: ["water", "fire"],
-    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> leave a <b>Blazing trail</b> behind."
-  }, {
-    name: "Fiery Tornadoes", img: "Duo_Fire_Wind", tags: ["wind", "fire"],
-    desc: "<b>Tornadoes</b> spawn a stationary <b>Fiery ring</b>."
-  }, {
-    name: "Blooming Skull", img: "Duo_Graveyard_Bramble", tags: ["necromancy", "bramble"],
-    desc: "<b>Skeletons</b> spawn a <b>Rose turret</b> on death."
-  }, {
-    name: "Cosmic Pillar", img: "Duo_Graveyard_Eldritch", tags: ["chaos", "necromancy"],
-    desc: "New <b>Cosmic accident</b> spawns a pillar that automatically spawns <b>Skeletons</b>."
-  }, {
-    name: "Moment of Silence", img: "Duo_Graveyard_Time", tags: ["necromancy", "time"],
-    desc: "Apply <b>Chrono Lock</b> to nearby enemies upon losing <b>Spectral Armour</b>."
-  }, {
-    name: "Skeleton Dust", img: "Duo_Graveyard_Wind", tags: ["necromancy", "wind"],
-    desc: "<b>Skeletons</b> spawn with <b>X</b> <b>Sonic Boom(s)</b>."
-  }, {
-    name: "Tidal Plants", img: "Duo_Water_Bramble", tags: ["bramble", "water"],
-    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> create small <b>Tidal waves</b> on hit."
-  }, {
-    name: "Cursed Well", img: "Duo_Water_Eldritch", tags: ["water", "chaos"],
-    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> scale up with missing <b>Health</b> (<b>Cursed life</b> counts as missing <b>Health</b>)."
-  }, {
-    name: "Wet Armour", img: "Duo_Water_Graveyard", tags: ["necromancy", "water"],
-    desc: "Create <b>Tidal waves</b> upon losing <b>Spectral armour</b>."
-  }, {
-    name: "Water Pressure", img: "Duo_Water_Time", tags: ["water", "time"],
-    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> apply <b>Unstable</b> to enemies. <b>Unstable</b>: X% damage"
-  }, {
-    name: "Bubble Lift", img: "Duo_Water_Wind", tags: ["water", "wind"],
-    desc: "<b>Splash bubbles</b> greatly increases <b>Gale</b> on the enemy."
-  }, {
-    name: "Wind Spikes", img: "Duo_Wind_Bramble", tags: ["wind", "bramble"],
-    desc: "<b>Tornadoes</b> spawn <b>Rose darts</b>."
-  }, {
-    name: "Otherworldly Booms", img: "Duo_Wind_Eldritch", tags: ["wind", "chaos"],
-    desc: "<b>Sonic Booms</b> have a <b>Chance</b> of not depleting upon deployment."
-  }, {
-    name: "Sonic Echo", img: "Duo_Wind_Time", tags: ["wind", "time"],
-    desc: "<b>Sonic booms</b> also deploy a delayed <b>Past echo</b> of themselves."
-  }, 
-];
+function filterTag(tag) {
+  let result = twin_rituals
+    .filter(item => item.tags.includes(tag))
+    .sort((a, b) => a.tags.indexOf(tag) - b.tags.indexOf(tag));
+
+  render(result);
+}
 
 function render(list) {
   const tbody = document.getElementById("table_body");
@@ -117,7 +55,7 @@ function render(list) {
     const row = document.createElement("tr");
 
     row.innerHTML = `
-      <td><img src="legacy/${item.img}.png" height="82"></td>
+      <td><img src="legacy/${item.img}.png" height="88"></td>
       <td><p>${item.name}</p></td>
       <td><p>${item.desc}</p></td>
     `;
@@ -126,21 +64,487 @@ function render(list) {
   });
 }
 
-function filterTag(tag) {
-  let result;
+const rituals = {
+  fire: [
+    {
+      name: "Persistent Ring", img: "Fire/BlazingDuration",
+      desc: "Increase <b>Fiery ring</b> duration to X s."
+    }, {
+      name: "Fiery Explosion", img: "Fire/BlazingExplosion",
+      desc: "<b>Fiery ring</b> triggers an <b>Explosion</b> when ending."
+    }, {
+      name: "Fiery Dodge", img: "Fire/BlazingPerfectDodge",
+      desc: "Successful <b>Dodge</b> grants you a <b>Fiery ring</b>."
+    }, {
+      name: "Fiery Arcana", img: "Fire/BlazingSpecial",
+      desc: "<b>Arcana</b> grants you a <b>Fiery ring</b>."
+    }, {
+      name: "Persistent Burn", img: "Fire/BurnDuration",
+      desc: "Increase <b>Burn</b> duration."
+    }, {
+      name: "Burning Strike", img: "Fire/Burning attack",
+      desc: "<b>Strikes</b> inflict <b>Burn</b>."
+    }, {
+      name: "Burning Skill", img: "Fire/Burning Blitz",
+      desc: "<b>Skill</b> inflicts <b>Burn</b>."
+    }, {
+      name: "Blazing Dash", img: "Fire/Burning Dash",
+      desc: "<b>Dash</b> creates a <b>Blazing Trail</b>."
+    }, {
+      name: "Burning Deflect", img: "Fire/Burning Deflect",
+      desc: "Inflict <b>Burn</b> when you <b>Deflect</b> an enemy hit."
+    }, {
+      name: "Exploding Clash", img: "Fire/Clash explosion",
+      desc: "<b>Clash</b> triggers an <b>Explosion</b>."
+    }, {
+      name: "Explosive Death", img: "Fire/Corpse Explosion",
+      desc: "Enemies killed while affected by <b>Burn</b>, or in a <b>Blazing trail</b>, trigger an <b>Explosion</b>."
+    }, {
+      name: "Flash Fire", img: "Fire/Flash fire",
+      desc: "Increase all <b>Fire</b> damage by X%."
+    }, {
+      name: "Persistent Trail", img: "Fire/Heat zone duration +",
+      desc: "Increase <b>Blazing trail</b> duration."
+    }, {
+      name: "Wide Trail", img: "Fire/Heat zone size +",
+      desc: "<b>Blazing trail</b> size is increased by X%"
+    }, {
+      name: "Temperature Rising", img: "Fire/Temperature rizing",
+      desc: "Increase <b>Burn</b> damage by X for each enemy affected by <b>Burn</b>."
+    }, {
+      name: "Spreading Burn", img: "Fire/Thrown combustion",
+      desc: "<b>Launched</b> enemies apply <b>Burn</b> to themselves and other enemies they collide with."
+    }
+  ], water: [
+    {
+      name: "Bubble Skill", img: "Water/Bubble Blitz",
+      desc: "<b>Skill</b> traps the enemy in a <b>Splash bubble</b>."
+    }, {
+      name: "Bubble Finisher", img: "Water/Bubble Finisher",
+      desc: "<b>Finisher</b> traps the enemy in a <b>Splash bubble</b>."
+    }, {
+      name: "Big Burst", img: "Water/Bubble Size",
+      desc: "<b>Splash bubble</b> bursts damage +X%."
+    }, {
+      name: "Bubble Throw", img: "Water/Bubble Throw",
+      desc: "<b>Throw</b> traps the enemy in a <b>Splash bubble</b>."
+    }, {
+      name: "Bubble Wave", img: "Water/Bubble Waves",
+      desc: "<b>Splash bubbles</b> burst into a circle of small <b>Tidal waves</b>."
+    }, {
+      name: "Impact Bounce", img: "Water/Impact Bounce",
+      desc: "Enemies suffer +X% damage on <b>Impact hits</b>."
+    }, {
+      name: "Mana Bounce", img: "Water/Mana Bounce",
+      desc: "<b>Launched</b> enemies spawn X% of a <b>Mana</b> chunk as orbs on collisions."
+    }, {
+      name: "Repelling Power", img: "Water/Repelling Power",
+      desc: "All attacks cause +X% pushback distance."
+    }, {
+      name: "Rupture", img: "Water/Rupture",
+      desc: "Enemies take X damage per meter while subject to pushback."
+    }, {
+      name: "Bouncing Bubble", img: "Water/Splash Bubble Stacks",
+      desc: "<b>Splash bubbles</b> bounce and burst X additional time(s)."
+    }, {
+      name: "Wave Clash", img: "Water/Wave Clash",
+      desc: "<b>Clash</b> spawns big <b>Tidal waves</b>."
+    }, {
+      name: "Harsh Waves", img: "Water/Wave Damage",
+      desc: "<b>Tidal waves</b> deal more damage."
+    }, {
+      name: "Wave Dash", img: "Water/Wave Dash",
+      desc: "Forward <b>Dash</b> spawns small <b>Tidal waves</b>."
+    }, {
+      name: "Bigger Waves", img: "Water/Wave Size",
+      desc: "<b>Tidal waves</b> are X% bigger."
+    }, {
+      name: "Wave Arcana", img: "Water/Wave Special",
+      desc: "<b>Arcana</b> spawns big <b>Tidal waves</b>."
+    }, {
+      name: "Wave Landing", img: "Water/WaveLanding",
+      desc: "Landing on the ground spawns small <b>Tidal waves</b>."
+    }
+  ], wind: [
+    {
+      name: "Tornado Jump", img: "Wind/Cyclone jump",
+      desc: "Gain X extra <b>Jump(s)</b> that spawn(s) a <b>Small Tornado</b>. Can jump cancel certain moves."
+    }, {
+      name: "Strike High", img: "Wind/Damage in the wind",
+      desc: "<b>Aerial attacks</b> deal +X% damage per meter high."
+    }, {
+      name: "Floating Wind", img: "Wind/Floating Wind",
+      desc: "<b>Launched</b> enemies with <b>Gale</b> float for X s."
+    }, {
+      name: "Tornado Strike", img: "Wind/Force Attack",
+      desc: "<b>Strikes</b> increase <b>Gale</b> on the enemy until a <b>Tornado</b> is created."
+    }, {
+      name: "Tornado Skill", img: "Wind/Force Blitz",
+      desc: "<b>Skill</b> greatly increases <b>Gale</b> on the enemy until a <b>Tornado</b> is created."
+    }, {
+      name: "Mana Flow", img: "Wind/Mana in the Wind",
+      desc: "Gain more <b>Mana</b> on hits as your <b>Combo</b> counter increases."
+    }, {
+      name: "Sonic Barrage", img: "Wind/Sonic Barrage",
+      desc: "<b>Sonic booms</b> are deployed much faster."
+    }, {
+      name: "Power Boom", img: "Wind/Sonic Boom Power",
+      desc: "<b>Sonic booms</b> are bigger and deal X% more damage."
+    }, {
+      name: "Sonic Clash", img: "Wind/Sonic Clash",
+      desc: "<b>Clash</b> fills up your <b>Sonic boom</b> charges to their maximum of X."
+    }, {
+      name: "Sonic Deflect", img: "Wind/Sonic Deflect",
+      desc: "<b>Deflect</b> fills up your <b>Sonic boom</b> charges to their maximum of X."
+    }, {
+      name: "Sonic Force", img: "Wind/Sonic Force",
+      desc: "<b>Sonic booms</b> slightly increases <b>Gale</b> on the enemy until a <b>Tornado</b> is created."
+    }, {
+      name: "Sonic Arcana", img: "Wind/Sonic Special",
+      desc: "<b>Arcana</b> fills up your <b>Sonic boom</b> charges to their maximum of X."
+    }, {
+      name: "Fatal Flow", img: "Wind/Strike High",
+      desc: "Attacks deal more damage as your <b>Combo</b> counter increases."
+    }, {
+      name: "Wind Pressure", img: "Wind/Wind Pressure",
+      desc: "<b>Pressure</b> builds up X% slower and <b>Overpressure</b> hit deals +X% damage."
+    }
+  ], thunder: [
+    {
+      name: "Lightning Bounce", img: "Electric/ArcLightning",
+      desc: "<b>Chain lightning</b> bounces X additional times."
+    }, {
+      name: "Tracking Spark", img: "Electric/AttractingCloud",
+      desc: "<b>Proximity spark</b> tracks closest enemy at X% movement speed."
+    }, {
+      name: "Spark Clash", img: "Electric/ClashSpark",
+      desc: "<b>Clash</b> spawns a <b>Proximity spark</b>."
+    }, {
+      name: "Quick Spark", img: "Electric/CloudAttackSpeed",
+      desc: "<b>Proximity spark</b> charges X% faster."
+    }, {
+      name: "Charging Spark", img: "Electric/CloudDuration",
+      desc: "<b>Proximity spark</b> charges up over time."
+    }, {
+      name: "Spark Storm", img: "Electric/ExtraThunderCloud",
+      desc: "<b>Proximity spark</b> hits X times in a row."
+    }, {
+      name: "Lightning Strike", img: "Electric/LightningAttackX",
+      desc: "<b>Strike</b> increases your <b>Static charge</b> by X% (any hit at 100% triggers <b>Chain lightning</b>)."
+    }, {
+      name: "Power Conduction", img: "Electric/LightningDamage",
+      desc: "<b>Chain lightning</b> damage is increased by X% of triggering hit damage."
+    }, {
+      name: "Overcharged Dash", img: "Electric/LightningDashB",
+      desc: "Removes <b>Dash</b> cooldown if <b>Static charge</b> is at least X%."
+    }, {
+      name: "Spark Arcana", img: "Electric/LightningSpecial",
+      desc: "<b>Arcana</b> spawns a <b>Proximity spark</b>."
+    }, {
+      name: "Critical Overload", img: "Electric/OverChargedCritical",
+      desc: "Increase your <b>Critical</b> chance by +X% times your <b>Static charge</b> (+X % at 100%)."
+    }, {
+      name: "Spark Energy", img: "Electric/SparkBattery",
+      desc: "<b>Proximity spark</b> grants you X% <b>Static charge</b> when triggered (any hit at 100% triggers <b>Chain lightning</b>)."
+    }, {
+      name: "Lightning Critical", img: "Electric/StaticCritical",
+      desc: "<b>Criticals</b> increase your <b>Static charge</b> by X% (any hit at 100% triggers <b>Chain lightning</b>)."
+    }, {
+      name: "Lightning Deflect", img: "Electric/StaticDeflect",
+      desc: "<b>Deflects</b> increase your <b>Static charge</b> by X% (any hit at 100% triggers <b>Chain lightning</b>)."
+    }, {
+      name: "Spark Dodge", img: "Electric/StaticDodge",
+      desc: "<b>Dodge</b> spawns a <b>Proximity spark</b>."
+    }, {
+      name: "Lightning Skill", img: "Electric/ThunderCloudY",
+      desc: "<b>Skills</b> increase your <b>Static charge</b> by X% (any hit at 100% triggers <b>Chain lightning</b>)."
+    }
+  ], bramble: [
+    {
+      name: "Mana Font", img: "Bramble/Mana Turrets",
+      desc: "<b>Rose turrets</b> spawn X% of their damage as <b>Mana</b> orbs on each attack."
+    }, {
+      name: "Momentum Thorn", img: "Bramble/Momentum Daggers",
+      desc: "<b>Thorn daggers</b> gain X damage per meter over their travel distance."
+    }, {
+      name: "Mowing Dash", img: "Bramble/Mowing Dash",
+      desc: "<b>Dash</b> over a <b>Throwable</b> breaks it into X <b>Rose darts</b>."
+    }, {
+      name: "Piercing Thorn", img: "Bramble/Piercing Daggers",
+      desc: "<b>Thorn daggers</b> now pierce through enemies."
+    }, {
+      name: "Rose Clash", img: "Bramble/Rose Clash",
+      desc: "<b>Clash</b> spawns a <b>Rose turret</b>."
+    }, {
+      name: "Sharp Dart", img: "Bramble/Rose Dart Power",
+      desc: "<b>Rose darts</b> deal X% more damage and hit stun."
+    }, {
+      name: "Rose Resilience", img: "Bramble/Rose Duration n Life",
+      desc: "<b>Rose turrets</b> now have X <b>Health</b> and therefore last longer."
+    }, {
+      name: "Rose Frenzy", img: "Bramble/Rose Frenzy",
+      desc: "<b>Rose turrets</b> now only wait X s between attacks."
+    }, {
+      name: "Rose Recycling", img: "Bramble/Rose Recycling",
+      desc: "<b>Rose turrets</b> drop X <b>Thorn daggers</b> when dying."
+    }, {
+      name: "Rose Arcana", img: "Bramble/Rose Special",
+      desc: "<b>Arcana</b> spawns a <b>Rose turret</b>."
+    }, {
+      name: "Thorn Deflect", img: "Bramble/Thorn Deflect",
+      desc: "<b>Deflects</b> spawn X <b>Thorn daggers</b>."
+    }, {
+      name: "Thorn Dodge", img: "Bramble/Thorn Dodge",
+      desc: "<b>Dodges</b> spawn X <b>Thorn daggers</b>."
+    }, {
+      name: "Thorn Finisher", img: "Bramble/Thorn Finisher",
+      desc: "<b>Finishers</b> spawn X <b>Thorn daggers</b>."
+    }, {
+      name: "Thorn Spread", img: "Bramble/Thorn Spread",
+      desc: "<b>Thorn daggers</b> split into X."
+    }
+  ], necromancy: [
+    {
+      name: "Spectral Strike", img: "Graveyard/Bone Attack",
+      desc: "[c1]Strike[/c] grants X% of their damage in [c1]Spectral armour[/c]."
+    }, {
+      name: "Spectral Skill", img: "Graveyard/Bone Blitz",
+      desc: "[c1]Skill[/c] grants X% of their damage in [c1]Spectral armour[/c]."
+    }, {
+      name: "Spectral Deflect", img: "Graveyard/Bone Deflect",
+      desc: "[c1]Deflect[/c] grants you X% [c1]Spectral armour[/c]."
+    }, {
+      name: "Spectral Persistence", img: "Graveyard/Bone Persistence",
+      desc: "Lose only X% [c1]Spectral armour[/c] when being hit."
+    }, {
+      name: "Super skeleton", img: "Graveyard/Elite Skeleton",
+      desc: "When you spawn a [c1]Skeleton[/c], it has X% chance of being an [c1]Super skeleton[/c]."
+    }, {
+      name: "Bone Revenge", img: "Graveyard/GraveyardBone_Placeholder",
+      desc: "After being hit or deflecting a hit, spawns revenge bones dealing X% of the unreduced incoming damage."
+    }, {
+      name: "Spectral Boon", img: "Graveyard/Haunted Weapon",
+      desc: "Attacks deal +X% damage per [c1]Spectral armour[/c] (+X% when the armour is full)."
+    }, {
+      name: "Living Armour", img: "Graveyard/Living Armor",
+      desc: "When hit with at least X% [c1]Spectral Armour[/c], spawn two [c1]Skeletons[/c]."
+    }, {
+      name: "Mana Bleed", img: "Graveyard/Mana Bleed",
+      desc: "Gain [c1]Mana[/c] whenever you receive a Hit, mitigated or not."
+    }, {
+      name: "Skeletal Clash", img: "Graveyard/Skeleton Clash",
+      desc: "[c1]Clash[/c] spawns a [c1]Skeleton[/c]."
+    }, {
+      name: "Skeleton Dodge", img: "Graveyard/Skeleton Dodge",
+      desc: "[c1]Dodge[/c] spawns a [c1]Skeleton[/c]."
+    }, {
+      name: "Bone Enthusiasm", img: "Graveyard/Skeleton Enthusiasm",
+      desc: "[c1]Skeletons[/c] are invincible, don't decay, and move faster for X s after spawning."
+    }, {
+      name: "Skeleton Preservation", img: "Graveyard/Skeleton Preservation",
+      desc: "[c1]Skeletons[/c] decay time is X% longer."
+    }, {
+      name: "Skeletal Arcana", img: "Graveyard/Skeleton special",
+      desc: "[c1]Arcana[/c] spawns a [c1]Skeleton[/c]."
+    }, {
+      name: "Useful Remains", img: "Graveyard/Usefull remains",
+      desc: "[c1]Skeletons[/c] spawn X [c1]Throwable[/c] bone(s) when getting hit."
+    }
+  ], time: [
+    {
+      name: "Backtrack", img: "Time/Backtrack",
+      desc: "X% chance to [c1]Evade[/c] any hits (affected by [c1]Luck[/c])."
+    }, {
+      name: "Chrono Clash", img: "Time/Chrono Clash",
+      desc: "[c1]Clash[/c] applies [c1]Chrono Lock[/c] for X s."
+    }, {
+      name: "Chrono Critical", img: "Time/Chrono Critical",
+      desc: "[c1]Criticals[/c] apply [c1]Chrono Lock[/c] for X s."
+    }, {
+      name: "Weakening Lock", img: "Time/Chrono Damage",
+      desc: "Enemies with [c1]Chrono Lock[/c] take +X% damage."
+    }, {
+      name: "Chrono Dodge", img: "Time/Chrono Dodge",
+      desc: "Successful [c1]Dodge[/c] applies [c1]Chrono Lock[/c] for X s."
+    }, {
+      name: "Persistent Lock", img: "Time/Chrono Duration",
+      desc: "[c1]Chrono Lock[/c] lasts X s."
+    }, {
+      name: "Chrono Overpressure", img: "Time/Chrono Pressure",
+      desc: "[c1]Overpressure[/c] applies [c1]Chrono Lock[/c] for X s."
+    }, {
+      name: "What Remains", img: "Time/Mana Pressure",
+      desc: "Enemies spawn X [c1]Mana[/c] chunk(s) as orbs on [c1]Overpressure[/c]."
+    }, {
+      name: "Multiple Echoes", img: "Time/More Remnant",
+      desc: "[c1]Past echoes[/c] spawn X additional times."
+    }, {
+      name: "Echoing Skill", img: "Time/Remnant Blitz",
+      desc: "[c1]Skill[/c] spawns a [c1]Past echo[/c]."
+    }, {
+      name: "Powerful Echoes", img: "Time/Remnant damage",
+      desc: "[c1]Past echoes[/c] deal more damage."
+    }, {
+      name: "Echoing Arcana", img: "Time/Remnant Special",
+      desc: "[c1]Arcana[/c] spawns a [c1]Past echo[/c]."
+    }, {
+      name: "Echoing Finisher", img: "Time/Remnant Strike",
+      desc: "[c1]Finisher[/c] spawns a [c1]Past echo[/c]."
+    }, {
+      name: "Roll back Time", img: "Time/Ritual reroll",
+      desc: "Rerolls shop and rewards options."
+    }, {
+      name: "Greater Instability", img: "Time/Unstable Damage",
+      desc: "[c1]Unstable[/c] damage increase is more potent."
+    }, {
+      name: "Unstable Dash", img: "Time/Unstable Dash",
+      desc: "[c1]Dash[/c] phases through enemies and applies [c1]Unstable[/c] causing them to take increased damage."
+    }, {
+      name: "Unstable Throw", img: "Time/Unstable Throw",
+      desc: "[c1]Throw[/c] applies [c1]Unstable[/c] causing enemies to take increased damage."
+    }, {
+      name: "Spreading Instability", img: "Time/Unstable Transmission",
+      desc: "[c1]Launched[/c] enemies with [c1]Unstable[/c] apply it to enemies they collide with."
+    }
+  ], chaos: [
+    {
+      name: "Cosmic Affinity", img: "Eldritch/Cosmic Affinity",
+      desc: "Boost [c1]Cosmic accident[/c] power, increasing the potency of all their effects."
+    }, {
+      name: "Cosmic Clash", img: "Eldritch/Cosmic Clash",
+      desc: "[c1]Clash[/c] spawns a [c1]Cosmic accident[/c]."
+    }, {
+      name: "Cosmic Critical", img: "Eldritch/Cosmic Critical",
+      desc: "[c1]Criticals[/c] spawn a [c1]Cosmic accident[/c]."
+    }, {
+      name: "Cosmic Dodge", img: "Eldritch/Cosmic Dodge",
+      desc: "Successful [c1]Dodge[/c] spawns a [c1]Cosmic accident[/c]."
+    }, {
+      name: "Cosmic Arcana", img: "Eldritch/Cosmic Special",
+      desc: "[c1]Arcana[/c] spawns a [c1]Cosmic accident[/c]."
+    }, {
+      name: "Chaotic Critical", img: "Eldritch/Critical aleatoire",
+      desc: "[c1]Critical[/c] hit randomly deals between X% and X% damage, instead of a constant X%."
+    }, {
+      name: "Cursed Skill", img: "Eldritch/Cursed Blitz",
+      desc: "[c1]Skill[/c] deals more damage but [c1]Curses[/c] 10 of your [c1]Health[/c] points on hit."
+    }, {
+      name: "Treasure Hex", img: "Eldritch/Cursed Damage",
+      desc: "[c1]Cursed[/c] moves now drop X gold on hit."
+    }, {
+      name: "Cursed Luck", img: "Eldritch/Cursed Luck",
+      desc: "The lower your [c1]Health[/c] is, the higher your [c1]Luck[/c]. [c1]Cursed Life[/c] counts as missing [c1]Health[/c]."
+    }, {
+      name: "Cursed Mana gain", img: "Eldritch/Cursed Mana",
+      desc: "The lower your [c1]Health[/c] is, the more [c1]Mana[/c] you gain from all sources. [c1]Cursed Life[/c] counts as missing [c1]Health[/c]."
+    }, {
+      name: "Cursed Finisher", img: "Eldritch/Cursed Strike",
+      desc: "[c1]Finisher[/c] deals more damage but [c1]Curses[/c] 10 of your [c1]Health[/c] points on hit."
+    }, {
+      name: "Bad Omen", img: "Eldritch/Damage Hex",
+      desc: "Increases all damage by X% but reduces [c1]Luck[/c] by 15."
+    }, {
+      name: "Detox Deflect", img: "Eldritch/Deflect Detox",
+      desc: "[c1]Deflect[/c] cures X [c1]Cursed life[/c]."
+    }, {
+      name: "Deep Detox", img: "Eldritch/More detox",
+      desc: "You cure X% [c1]Cursed life[/c] from all sources of Detox."
+    }, {
+      name: "Ancient Luck", img: "Eldritch/More Luck",
+      desc: "Greatly increases your [c1]Luck[/c]."
+    }, {
+      name: "Cosmic Cataclysm", img: "Eldritch/More portals",
+      desc: "[c1]Cosmic accidents[/c] spawn in groups of X."
+    }
+  ]
+};
 
-  if (tag === "all") {
-    result = [...items];
-  } else {
-    result = items
-      .filter(item => item.tags.includes(tag))
-      .sort((a, b) => a.tags.indexOf(tag) - b.tags.indexOf(tag));
-  }
-
-  render(result);
-}
-
-
-render(items);
+const twin_rituals = [
+  {
+    name: "Thorn Echo", img: "Duo/Duo_Bramble_Time", tags: ["bramble", "time"],
+    desc: "<b>Thorn daggers</b> leave a delayed <b>Past echo</b> of themselves."
+  }, {
+    name: "Detox Plant", img: "Duo/Duo_Eldritch_Bramble", tags: ["bramble", "chaos"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> cure <b>Cursed life</b>."
+  }, {
+    name: "Chaos Echo", img: "Duo/Duo_Eldritch_Time", tags: ["time", "chaos"],
+    desc: "Adds a <b>Chance</b> that any action will generate an immediately active <b>Past echo</b>."
+  }, {
+    name: "Zapping Plants", img: "Duo/Duo_Electric_Bramble", tags: ["bramble", "thunder"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> give <b>10%</b> <b>Static charges</b>."
+  }, {
+    name: "Cosmic Thunderstorm", img: "Duo/Duo_Electric_Eldritch", tags: ["chaos", "thunder"],
+    desc: "This new <b>Cosmic accident</b> can invoke a <b>Proximity spark</b> thunderstorm."
+  }, {
+    name: "Spectral Current", img: "Duo/Duo_Electric_Graveyard", tags: ["necromancy", "thunder"],
+    desc: "Triggers <b>Chain lightning</b> upon losing <b>Spectral armour</b>."
+  }, {
+    name: "Charging Station", img: "Duo/Duo_Electric_Time", tags: ["thunder", "time"],
+    desc: "Gain <b>Static charge</b> over time."
+  }, {
+    name: "Magnetised Waves", img: "Duo/Duo_Electric_Water", tags: ["thunder", "water"],
+    desc: "<b>Proximity spark</b> generates a <b>Tidal wave</b> on activation."
+  }, {
+    name: "Chain Tornadoes", img: "Duo/Duo_Electric_Wind", tags: ["thunder", "wind"],
+    desc: "<b>Chain lightning</b> spawns <b>Tornado</b> on hit."
+  }, {
+    name: "Burning Plants", img: "Duo/Duo_Fire_Bramble", tags: ["bramble", "fire"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> apply <b>Burn</b>."
+  }, {
+    name: "Hellish Portals", img: "Duo/Duo_Fire_Eldritch", tags: ["chaos", "fire"],
+    desc: "All <b>Cosmic accidents</b> create <b>Blazing trails</b>."
+  }, {
+    name: "Spark Combustion", img: "Duo/Duo_Fire_Electric", tags: ["thunder", "fire"],
+    desc: "<b>Proximity spark</b> and <b>Chain lightning</b> also apply <b>Burn</b>."
+  }, {
+    name: "Fiery Skeleton", img: "Duo/Duo_Fire_Graveyard", tags: ["necromancy", "fire"],
+    desc: "<b>Skeletons</b> spawn with a <b>Fiery ring</b>."
+  }, {
+    name: "Melting Heat", img: "Duo/Duo_Fire_Time", tags: ["fire", "time"],
+    desc: "<b>Blazing trails</b> also slow down enemies' movement speed."
+  }, {
+    name: "Sizzling Water", img: "Duo/Duo_Fire_Water", tags: ["water", "fire"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> leave a <b>Blazing trail</b> behind."
+  }, {
+    name: "Fiery Tornadoes", img: "Duo/Duo_Fire_Wind", tags: ["wind", "fire"],
+    desc: "<b>Tornadoes</b> spawn a stationary <b>Fiery ring</b>."
+  }, {
+    name: "Blooming Skull", img: "Duo/Duo_Graveyard_Bramble", tags: ["necromancy", "bramble"],
+    desc: "<b>Skeletons</b> spawn a <b>Rose turret</b> on death."
+  }, {
+    name: "Cosmic Pillar", img: "Duo/Duo_Graveyard_Eldritch", tags: ["chaos", "necromancy"],
+    desc: "New <b>Cosmic accident</b> spawns a pillar that automatically spawns <b>Skeletons</b>."
+  }, {
+    name: "Moment of Silence", img: "Duo/Duo_Graveyard_Time", tags: ["necromancy", "time"],
+    desc: "Apply <b>Chrono Lock</b> to nearby enemies upon losing <b>Spectral Armour</b>."
+  }, {
+    name: "Skeleton Dust", img: "Duo/Duo_Graveyard_Wind", tags: ["necromancy", "wind"],
+    desc: "<b>Skeletons</b> spawn with <b>X</b> <b>Sonic Boom(s)</b>."
+  }, {
+    name: "Tidal Plants", img: "Duo/Duo_Water_Bramble", tags: ["bramble", "water"],
+    desc: "<b>Thorn daggers</b> and <b>Rose darts</b> create small <b>Tidal waves</b> on hit."
+  }, {
+    name: "Cursed Well", img: "Duo/Duo_Water_Eldritch", tags: ["water", "chaos"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> scale up with missing <b>Health</b> (<b>Cursed life</b> counts as missing <b>Health</b>)."
+  }, {
+    name: "Wet Armour", img: "Duo/Duo_Water_Graveyard", tags: ["necromancy", "water"],
+    desc: "Create <b>Tidal waves</b> upon losing <b>Spectral armour</b>."
+  }, {
+    name: "Water Pressure", img: "Duo/Duo_Water_Time", tags: ["water", "time"],
+    desc: "<b>Splash bubbles</b> and <b>Tidal waves</b> apply <b>Unstable</b> to enemies. <b>Unstable</b>: X% damage"
+  }, {
+    name: "Bubble Lift", img: "Duo/Duo_Water_Wind", tags: ["water", "wind"],
+    desc: "<b>Splash bubbles</b> greatly increases <b>Gale</b> on the enemy."
+  }, {
+    name: "Wind Spikes", img: "Duo/Duo_Wind_Bramble", tags: ["wind", "bramble"],
+    desc: "<b>Tornadoes</b> spawn <b>Rose darts</b>."
+  }, {
+    name: "Otherworldly Booms", img: "Duo/Duo_Wind_Eldritch", tags: ["wind", "chaos"],
+    desc: "<b>Sonic Booms</b> have a <b>Chance</b> of not depleting upon deployment."
+  }, {
+    name: "Sonic Echo", img: "Duo/Duo_Wind_Time", tags: ["wind", "time"],
+    desc: "<b>Sonic booms</b> also deploy a delayed <b>Past echo</b> of themselves."
+  }, 
+];
 </script>
 </body></html>
