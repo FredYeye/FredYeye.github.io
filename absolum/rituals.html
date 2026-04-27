@@ -14,9 +14,6 @@
 <button style="background-color:#58c495;" onclick="filterTag2('necromancy')">Necromancy</button>
 <button style="background-color:#D0E6F7;" onclick="filterTag2('time')">Time</button>
 <button style="background-color:#ac88eb;" onclick="filterTag2('chaos')">Chaos</button>
-</div>
-
-<div class="buttons">
 <p>Twin Rituals</p>
 <button style="background-color:#ffaa3b;" onclick="filterTag('fire')">Fire</button>
 <button style="background-color:#9ebbf0;" onclick="filterTag('water')">Water</button>
@@ -30,13 +27,21 @@
 
 <hr>
 
-<table>
-  <tbody id="table_body"></tbody>
-</table>
+<div class="container">
+<div><table><tbody id="table_body"></tbody></table></div>
+<div class="text"><p id="info"></p></div>
+</div>
 
 <script>
 function filterTag2(tag) {
   render(rituals[tag]);
+
+  const pbody = document.getElementById("info");
+  if(tag == "fire") {
+    pbody.innerHTML = "Burn base values:<br>Burn: 2 damage/sec<br>Damage multiplier: 2x<br>Duration: 4.0s";
+  } else {
+    pbody.innerHTML = "";
+  }
 }
 
 function filterTag(tag) {
@@ -68,25 +73,25 @@ const rituals = {
   fire: [
     {
       name: "Burning Strike", img: "Fire/Burning attack",
-      desc: "<b>Strikes</b> inflict <b>Burn</b>."
+      desc: "<b>Strikes</b> inflict <b>Burn</b>.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
     }, {
       name: "Burning Skill", img: "Fire/Burning Blitz",
-      desc: "<b>Skill</b> inflicts <b>Burn</b>."
+      desc: "<b>Skill</b> inflicts <b>Burn</b>.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
     }, {
       name: "Burning Deflect", img: "Fire/Burning Deflect",
-      desc: "Inflict <b>Burn</b> when you <b>Deflect</b> an enemy hit."
+      desc: "Inflict <b>Burn</b> when you <b>Deflect</b> an enemy hit.<br><b>Burn</b>: <em class=\"lv\">2/4/6</em> damage/sec"
     }, {
       name: "Spreading Burn", img: "Fire/Thrown combustion",
-      desc: "<b>Launched</b> enemies apply <b>Burn</b> to themselves and other enemies they collide with."
+      desc: "<b>Launched</b> enemies apply <b>Burn</b> to themselves and other enemies they collide with.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
     }, {
       name: "Persistent Burn", img: "Fire/BurnDuration",
-      desc: "Increase <b>Burn</b> duration."
+      desc: "Increase <b>Burn</b> duration.<br><b>Burn Duration</b>: <em class=\"lv\">2/4/6</em> s"
     }, {
       name: "Temperature Rising", img: "Fire/Temperature rizing",
-      desc: "Increase <b>Burn</b> damage by X for each enemy affected by <b>Burn</b>."
+      desc: "Increase <b>Burn</b> damage by <em class=\"lv\">1/2/3</em> for each enemy affected by <b>Burn</b>."
     }, {
       name: "Flash Fire", img: "Fire/Flash fire",
-      desc: "Increase all <b>Fire</b> damage by X%."
+      desc: "Increase all <b>Fire</b> damage by <em class=\"lv\">20/40/60</em>%."
     }, {
       name: "Fiery Dodge", img: "Fire/BlazingPerfectDodge",
       desc: "Successful <b>Dodge</b> grants you a <b>Fiery ring</b>."
