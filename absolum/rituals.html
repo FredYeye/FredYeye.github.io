@@ -38,7 +38,7 @@ function filterTag2(tag) {
 
   const pbody = document.getElementById("info");
   if(tag == "fire") {
-    pbody.innerHTML = "Burn base values:<br>Burn: 2 damage/sec<br>Damage multiplier: 2x<br>Duration: 4.0s";
+    pbody.innerHTML = "<b>Burn base values</b><br>Damage: 4 / second<br>Duration: 4.0s<br><br><b>Fiery Ring base values</b><br>Damage: 1 / rotation<br>Duration: 4.0s<br><br><b>Explosion base values</b><br>Damage: 20<br><br><b>Blazing Trail base values</b><br>Damage: 2 / second<br>Duration: 3.0s";
   } else {
     pbody.innerHTML = "";
   }
@@ -73,52 +73,52 @@ const rituals = {
   fire: [
     {
       name: "Burning Strike", img: "Fire/Burning attack",
-      desc: "<b>Strikes</b> inflict <b>Burn</b>.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
+      desc: "<b>Strikes</b> inflict <b>Burn</b>.<br>+<em class=\"lv\">2/4/6</em> damage / second"
     }, {
       name: "Burning Skill", img: "Fire/Burning Blitz",
-      desc: "<b>Skill</b> inflicts <b>Burn</b>.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
+      desc: "<b>Skill</b> inflicts <b>Burn</b>.<br>+<em class=\"lv\">2/4/6</em> damage / second"
     }, {
       name: "Burning Deflect", img: "Fire/Burning Deflect",
-      desc: "Inflict <b>Burn</b> when you <b>Deflect</b> an enemy hit.<br><b>Burn</b>: <em class=\"lv\">2/4/6</em> damage/sec"
+      desc: "Inflict <b>Burn</b> when you <b>Deflect</b> an enemy hit.<br>+<em class=\"lv\">4/8/12</em> damage / second"
     }, {
       name: "Spreading Burn", img: "Fire/Thrown combustion",
-      desc: "<b>Launched</b> enemies apply <b>Burn</b> to themselves and other enemies they collide with.<br><b>Burn</b>: <em class=\"lv\">1/2/3</em> damage/sec"
+      desc: "<b>Launched</b> enemies apply <b>Burn</b> to themselves and other enemies they collide with.<br>+<em class=\"lv\">2/4/6</em> damage / second"
     }, {
       name: "Persistent Burn", img: "Fire/BurnDuration",
-      desc: "Increase <b>Burn</b> duration.<br><b>Burn Duration</b>: <em class=\"lv\">2/4/6</em> s"
+      desc: "Increase <b>Burn</b> duration.<br>+<em class=\"lv\">2/4/6</em> seconds"
     }, {
       name: "Temperature Rising", img: "Fire/Temperature rizing",
-      desc: "Increase <b>Burn</b> damage by <em class=\"lv\">1/2/3</em> for each enemy affected by <b>Burn</b>."
+      desc: "Increase <b>Burn</b> damage by <em class=\"lv\">2/4/6</em> for each enemy affected by <b>Burn</b>."
     }, {
       name: "Flash Fire", img: "Fire/Flash fire",
       desc: "Increase all <b>Fire</b> damage by <em class=\"lv\">20/40/60</em>%."
     }, {
       name: "Fiery Dodge", img: "Fire/BlazingPerfectDodge",
-      desc: "Successful <b>Dodge</b> grants you a <b>Fiery ring</b>."
+      desc: "Successful <b>Dodge</b> grants you a <b>Fiery ring</b>.<br>+<em class=\"lv\">1/2/3</em> damage"
     }, {
       name: "Fiery Arcana", img: "Fire/BlazingSpecial",
-      desc: "<b>Arcana</b> grants you a <b>Fiery ring</b>."
+      desc: "<b>Arcana</b> grants you a <b>Fiery ring</b>.<br>+<em class=\"lv\">1/2/3</em> damage"
     }, {
       name: "Persistent Ring", img: "Fire/BlazingDuration",
-      desc: "Increase <b>Fiery ring</b> duration to X s."
+      desc: "Increase <b>Fiery ring</b> duration by <em class=\"lv\">2/4/6</em> seconds."
     }, {
       name: "Exploding Clash", img: "Fire/Clash explosion",
-      desc: "<b>Clash</b> triggers an <b>Explosion</b>."
+      desc: "<b>Clash</b> triggers an <b>Explosion</b>.<br>+<em class=\"lv\">4/16/28</em> damage"
     }, {
       name: "Fiery Explosion", img: "Fire/BlazingExplosion",
-      desc: "<b>Fiery ring</b> triggers an <b>Explosion</b> when ending."
+      desc: "<b>Fiery ring</b> triggers an <b>Explosion</b> when ending.<br>+<em class=\"lv\">4/16/28</em> damage"
     }, {
       name: "Explosive Death", img: "Fire/Corpse Explosion",
-      desc: "Enemies killed while affected by <b>Burn</b>, or in a <b>Blazing trail</b>, trigger an <b>Explosion</b>."
+      desc: "Enemies killed while affected by <b>Burn</b>, or in a <b>Blazing trail</b>, trigger an <b>Explosion</b>.<br>+<em class=\"lv\">4/16/28</em> damage"
     }, {
       name: "Blazing Dash", img: "Fire/Burning Dash",
-      desc: "<b>Dash</b> creates a <b>Blazing Trail</b>."
+      desc: "<b>Dash</b> creates a <b>Blazing Trail</b>.<br>+<em class=\"lv\">1/4/7</em> damage / second"
     }, {
       name: "Persistent Trail", img: "Fire/Heat zone duration +",
-      desc: "Increase <b>Blazing trail</b> duration."
+      desc: "Increase <b>Blazing trail</b> duration by <em class=\"lv\">2/4/6</em> seconds."
     }, {
       name: "Wide Trail", img: "Fire/Heat zone size +",
-      desc: "<b>Blazing trail</b> size is increased by X%"
+      desc: "<b>Blazing trail</b> size is increased by <em class=\"lv\">40/80/120</em>%."
     }
   ], water: [
     {
