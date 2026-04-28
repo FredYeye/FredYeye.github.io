@@ -36,12 +36,19 @@
 function filterTag2(tag) {
   render(rituals[tag]);
 
+  const base = {
+    fire: "<b>Burn base values</b><br>Damage: 4 / second<br>Duration: 4.0s<br><br><b>Fiery Ring base values</b><br>Damage: 1 / rotation<br>Duration: 4.0s<br><br><b>Explosion base values</b><br>Damage: 20<br><br><b>Blazing Trail base values</b><br>Damage: 2 / second<br>Duration: 3.0s",
+    water: "",
+    wind: "",
+    thunder: "",
+    bramble: "",
+    necromancy: "",
+    time: "",
+    chaos: "<b>Cursed Hit base values</b><br>Multiplier: 100%"
+  };
+
   const pbody = document.getElementById("info");
-  if(tag == "fire") {
-    pbody.innerHTML = "<b>Burn base values</b><br>Damage: 4 / second<br>Duration: 4.0s<br><br><b>Fiery Ring base values</b><br>Damage: 1 / rotation<br>Duration: 4.0s<br><br><b>Explosion base values</b><br>Damage: 20<br><br><b>Blazing Trail base values</b><br>Damage: 2 / second<br>Duration: 3.0s";
-  } else {
-    pbody.innerHTML = "";
-  }
+  pbody.innerHTML = base[tag];
 }
 
 function filterTag(tag) {
@@ -73,7 +80,7 @@ const rituals = {
   fire: [
     {
       name: "Burning Strike", img: "Fire/Burning attack",
-      desc: "<b>Strikes</b> inflict <b>Burn</b>.<br>+<em class=\"lv\">2/4/6</em> damage / second"
+      desc: "<b>Strikes</b> inflict <b>Burn</b>.<br>+<em class=\"lv\">2/4/6</em> damage / second",
     }, {
       name: "Burning Skill", img: "Fire/Burning Blitz",
       desc: "<b>Skill</b> inflicts <b>Burn</b>.<br>+<em class=\"lv\">2/4/6</em> damage / second"
@@ -434,31 +441,31 @@ const rituals = {
     },
     {
       name: "Cosmic Cataclysm", img: "Eldritch/More portals",
-      desc: "<b>Cosmic accidents</b> spawn in groups of X."
+      desc: "<b>Cosmic accidents</b> spawn in groups of <em class=\"lv\">2/3/4</em>."
     },
     {
       name: "Cursed Finisher", img: "Eldritch/Cursed Strike",
-      desc: "<b>Finisher</b> deals more damage but <b>Curses</b> 10 of your <b>Health</b> points on hit."
+      desc: "<b>Finisher</b> deals more damage but <b>Curses</b> 10 of your <b>Health</b> points on hit.<br>+<em class=\"lv\">50/100/150</em>% cursed hit damage"
     },
     {
       name: "Cursed Skill", img: "Eldritch/Cursed Blitz",
-      desc: "<b>Skill</b> deals more damage but <b>Curses</b> 10 of your <b>Health</b> points on hit."
+      desc: "<b>Skill</b> deals more damage but <b>Curses</b> 10 of your <b>Health</b> points on hit.<br>+<em class=\"lv\">50/100/150</em>% cursed hit damage"
     },
     {
       name: "Cursed Luck", img: "Eldritch/Cursed Luck",
-      desc: "The lower your <b>Health</b> is, the higher your <b>Luck</b>. <b>Cursed Life</b> counts as missing <b>Health</b>."
+      desc: "The lower your <b>Health</b> is, the higher your <b>Luck</b>. <b>Cursed Life</b> counts as missing <b>Health</b>.<br>+<em class=\"lv\">0.113/0.225/0.337</em> Luck / Health point missing"
     },
     {
       name: "Treasure Hex", img: "Eldritch/Cursed Damage",
-      desc: "<b>Cursed</b> moves now drop X gold on hit."
+      desc: "<b>Cursed</b> moves now drop <em class=\"lv\">3/6/9</em> gold on hit."
     },
     {
       name: "Cursed Mana gain", img: "Eldritch/Cursed Mana",
-      desc: "The lower your <b>Health</b> is, the more <b>Mana</b> you gain from all sources. <b>Cursed Life</b> counts as missing <b>Health</b>."
+      desc: "The lower your <b>Health</b> is, the more <b>Mana</b> you gain from all sources. <b>Cursed Life</b> counts as missing <b>Health</b>.<br>+<em class=\"lv\">1/2/3</em>% Mana gain / Health point missing"
     },
     {
       name: "Detox Deflect", img: "Eldritch/Deflect Detox",
-      desc: "<b>Deflect</b> cures X <b>Cursed life</b>."
+      desc: "<b>Deflect</b> cures <em class=\"lv\">5/10/15</em> <b>Cursed life</b>."
     },
     {
       name: "Deep Detox", img: "Eldritch/More detox",
@@ -466,15 +473,15 @@ const rituals = {
     },
     {
       name: "Bad Omen", img: "Eldritch/Damage Hex",
-      desc: "Increases all damage by X% but reduces <b>Luck</b> by 15."
+      desc: "Increases all damage by <em class=\"lv\">15/30/45</em>% but reduces <b>Luck</b> by 15."
     },
     {
       name: "Ancient Luck", img: "Eldritch/More Luck",
-      desc: "Greatly increases your <b>Luck</b>."
+      desc: "Greatly increases your <b>Luck</b>.<br>+<em class=\"lv\">5/10/15</em> Luck"
     },
     {
       name: "Chaotic Critical", img: "Eldritch/Critical aleatoire",
-      desc: "<b>Critical</b> hit randomly deals between X% and X% damage, instead of a constant X%."
+      desc: "<b>Critical</b> hits randomly deals between 150% and <em class=\"lv\">300/350/400</em>% damage, instead of a constant 200%."
     }
   ]
 };
