@@ -57,6 +57,9 @@ function filterTag(tag) {
     .sort((a, b) => a.tags.indexOf(tag) - b.tags.indexOf(tag));
 
   render(result);
+
+  const pbody = document.getElementById("info");
+  pbody.innerHTML = "";
 }
 
 function render(list) {
